@@ -1,0 +1,792 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Quest Visualizer</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #2d2d2d;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #404040;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        h1 { margin: 0; font-size: 1.2rem; color: #fff; }
+
+        .controls { display: flex; gap: 10px; align-items: center; }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #45a049; }
+        button.secondary { background-color: #555; }
+        button.secondary:hover { background-color: #666; }
+
+        input[type="file"] { display: none; }
+        .file-upload {
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #333;
+        }
+
+        #main-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            height: calc(100vh - 60px);
+        }
+
+        #mynetwork {
+            flex-grow: 1;
+            background: #222;
+            height: 100%;
+        }
+
+        #details-panel {
+            width: 400px;
+            background-color: #2d2d2d;
+            border-left: 1px solid #404040;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 5;
+        }
+
+        #details-panel.hidden {
+            transform: translateX(100%);
+        }
+
+        .panel-content h2 { margin-top: 0; color: #4CAF50; border-bottom: 1px solid #555; padding-bottom: 10px;}
+        .meta-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 10px;
+            background: #444;
+        }
+        .tag-main { background: #5D4037; color: #ffb74d; border: 1px solid #ffb74d; }
+        .tag-side { background: #0D47A1; color: #90caf9; border: 1px solid #90caf9; }
+        .tag-status { font-weight: bold; }
+
+        .section { margin-top: 20px; }
+        .section h3 { font-size: 1rem; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .objective { display: flex; align-items: start; margin-bottom: 5px; }
+        .checkbox { margin-right: 10px; }
+
+        .spoiler-box {
+            background: #1e1e1e;
+            border: 1px solid #d32f2f;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .spoiler-header { color: #e57373; font-weight: bold; cursor: pointer; user-select: none;}
+        .spoiler-content { display: none; margin-top: 10px; color: #ccc; }
+        .spoiler-content.visible { display: block; }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(45, 45, 45, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            pointer-events: none;
+        }
+        .legend-item { display: flex; align-items: center; margin: 5px 0; font-size: 0.8rem; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <h1>Quest Web Visualizer</h1>
+        <span style="font-size:0.8rem; color:#888;" id="file-name">Loaded: Current Campaign</span>
+    </div>
+    <div class="controls">
+        <label class="file-upload">
+            📂 Upload Save JSON
+            <input type="file" id="fileInput" accept=".json">
+        </label>
+        <button class="secondary" onclick="togglePhysics()" id="physicsBtn">Freeze Layout</button>
+        <button class="secondary" onclick="fitView()">Reset View</button>
+    </div>
+</header>
+
+<div id="main-container">
+    <div id="mynetwork"></div>
+    <div class="legend">
+        <div class="legend-item"><span class="dot" style="background:#FFD700; border: 2px solid #fff;"></span>Main Quest</div>
+        <div class="legend-item"><span class="dot" style="background:#97C2FC; border: 2px solid #fff;"></span>Side Quest</div>
+        <div class="legend-item"><span class="dot" style="background:#E0B0FF; border: 2px solid #fff;"></span>Character/Personal</div>
+        <div class="legend-item"><span class="dot" style="background:#C2FABC; border: 2px solid #fff;"></span>Faction/Other</div>
+        <div class="legend-item"><span class="dot" style="background:#666; border: 2px dashed #999;"></span>Completed</div>
+    </div>
+
+    <div id="details-panel" class="hidden">
+        <div class="panel-content" id="panel-content">
+        </div>
+        <button style="margin-top:20px; width:100%;" onclick="closePanel()">Close Panel</button>
+    </div>
+</div>
+
+<script>
+    // --- PRE-LOADED DATA FROM YOUR SAVE ---
+    // I have embedded the quests extracted from your file here.
+    const defaultQuests = [
+        {
+            "id": "quest_main_session1",
+            "name": "The Call to Arms",
+            "type": "Main",
+            "status": "Active",
+            "description": "Players have answered Captain Edric's recruitment call and arrive in Tawren. They must report to the barracks, receive their first assignment, and prove themselves capable.",
+            "prerequisiteIds": [
+                "quest_main_session2"
+            ],
+            "objectives": [
+                { "text": "Report to Captain Edric at Tawren Barracks", "completed": false },
+                { "text": "Accept and complete initial assignment", "completed": false },
+                { "text": "Return to Edric with results", "completed": false }
+            ],
+            "rewards": "5gp each, official recognition",
+            "runGuide": "Start of campaign. Establish setting, introduce Edric."
+        },
+        {
+            "id": "quest_main_session2",
+            "name": "The Pattern Emerges",
+            "type": "Main",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_session1", "quest_main_session3"],
+            "description": "Players have proven themselves and receive more significant assignments. They begin to notice the dysfunction plaguing Karmont's response.",
+            "objectives": [{"text": "Complete assignment", "completed": false}, {"text": "Notice dysfunction", "completed": false}]
+        },
+        {
+            "id": "quest_main_session3",
+            "name": "First Blood",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_session2", "quest_main_session4"],
+            "description": "A major monster attack on Britvold puts players in the thick of real danger. Edric promotes players.",
+            "objectives": [{"text": "Respond to attack", "completed": false}, {"text": "Observe Order response", "completed": false}]
+        },
+        {
+            "id": "quest_main_session4",
+            "name": "The Court",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_session3", "quest_main_find_aldwin", "quest_main_investigate_source", "quest_main_cure_duke"],
+            "description": "Players arrive in Karmont capital. Meet Duke, Isara, Maren, Voss. Politics begin.",
+            "objectives": [{"text": "Travel to Karmont", "completed": false}, {"text": "Meet major NPCs", "completed": false}]
+        },
+        {
+            "id": "quest_main_find_aldwin",
+            "name": "The Exiled Mage",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_session4", "quest_main_cure_duke", "quest_main_train_isara"],
+            "description": "Find the exiled Court Mage Aldwin in Darkwash Caverns.",
+            "objectives": [{"text": "Find Aldwin", "completed": false}, {"text": "Earn his trust", "completed": false}]
+        },
+        {
+            "id": "quest_main_investigate_source",
+            "name": "The Source of Corruption",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_session4", "quest_main_expose_order"],
+            "description": "Journey into Old Deadwood and investigate Felhurst Ruins.",
+            "objectives": [{"text": "Travel to Old Deadwood", "completed": false}, {"text": "Document Order presence", "completed": false}]
+        },
+        {
+            "id": "quest_main_cure_duke",
+            "name": "The Ailing Duke",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_find_aldwin", "quest_main_expose_order"],
+            "description": "Identify and remove the cursed Ring of Gentle Repose from the Duke.",
+            "objectives": [{"text": "Identify curse", "completed": false}, {"text": "Remove ring", "completed": false}]
+        },
+        {
+            "id": "quest_main_train_isara",
+            "name": "The Hidden Flame",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_find_aldwin"],
+            "description": "Aldwin trains Isara to control her sorcery.",
+            "objectives": [{"text": "Connect Isara and Aldwin", "completed": false}, {"text": "Protect training", "completed": false}]
+        },
+        {
+            "id": "quest_main_expose_order",
+            "name": "Unmasking the Light",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_investigate_source", "quest_main_cure_duke", "quest_main_stop_convergence"],
+            "description": "Gather evidence and expose the Order's conspiracy.",
+            "objectives": [{"text": "Gather evidence", "completed": false}, {"text": "Expose publicly", "completed": false}]
+        },
+        {
+            "id": "quest_main_protect_edric",
+            "name": "The Captain's Shadow",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Prevent the Order's assassination attempt on Captain Edric.",
+            "objectives": [{"text": "Identify threat", "completed": false}, {"text": "Save Edric", "completed": false}]
+        },
+        {
+            "id": "quest_main_phylactery",
+            "name": "The Heart of Darkness",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_stop_convergence"],
+            "description": "Destroy Vaelthrix's phylactery in Starfall Lake.",
+            "objectives": [{"text": "Find phylactery", "completed": false}, {"text": "Destroy it", "completed": false}]
+        },
+        {
+            "id": "quest_main_stop_convergence",
+            "name": "The Convergence",
+            "type": "Main",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_phylactery", "quest_main_expose_order"],
+            "description": "The finale. Assault Felhurst and stop the ritual.",
+            "objectives": [{"text": "Assault Felhurst", "completed": false}, {"text": "Defeat Vaelthrix", "completed": false}]
+        },
+        {
+            "id": "quest_side_harren_redemption",
+            "name": "The Broken General",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Redeem General Harren by proving Thornfield was a setup.",
+            "objectives": [{"text": "Find Thornfield evidence", "completed": false}, {"text": "Confront Harren", "completed": false}]
+        },
+        {
+            "id": "quest_side_osmonti_alliance",
+            "name": "Voices from the Waste",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_stop_convergence"],
+            "description": "Negotiate alliance with the Osmonti tribes.",
+            "objectives": [{"text": "Meet Mordak", "completed": false}, {"text": "Negotiate alliance", "completed": false}]
+        },
+        {
+            "id": "quest_side_livestock_killer",
+            "name": "The Livestock Killer",
+            "type": "Side",
+            "status": "Active",
+            "description": "Hunt a creature killing livestock near Tawren.",
+            "prerequisiteIds": [],
+            "objectives": [{"text": "Track creature", "completed": false}, {"text": "Kill it", "completed": false}]
+        },
+        {
+            "id": "quest_side_missing_merchant",
+            "name": "The Missing Merchant",
+            "type": "Side",
+            "status": "Active",
+            "description": "Find missing merchant Aldous Grimm.",
+            "prerequisiteIds": [],
+            "objectives": [{"text": "Find Grimm", "completed": false}, {"text": "Learn what he saw", "completed": false}]
+        },
+        {
+            "id": "quest_side_deserter_bounty",
+            "name": "Wanted: Bran the Blade",
+            "type": "Side",
+            "status": "Active",
+            "description": "Find deserter Bran. Capture him or hear his story.",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "objectives": [{"text": "Find Bran", "completed": false}, {"text": "Decide fate", "completed": false}]
+        },
+        {
+            "id": "quest_side_caravan_guard",
+            "name": "Guards Wanted",
+            "type": "Side",
+            "status": "Active",
+            "description": "Escort caravan to Karmont.",
+            "prerequisiteIds": [],
+            "objectives": [{"text": "Escort caravan", "completed": false}]
+        },
+        {
+            "id": "quest_side_britvold_terror",
+            "name": "Terror in the Trees",
+            "type": "Side",
+            "status": "Active",
+            "description": "Hunt monsters terrorizing Britvold.",
+            "prerequisiteIds": ["quest_side_forester_maps"],
+            "objectives": [{"text": "Hunt monsters", "completed": false}]
+        },
+        {
+            "id": "quest_side_forester_maps",
+            "name": "The Pattern in the Forest",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_side_britvold_terror", "quest_main_investigate_source"],
+            "description": "Verify forester's maps showing monster origins.",
+            "objectives": [{"text": "Check maps", "completed": false}]
+        },
+        {
+            "id": "quest_side_noble_escort",
+            "name": "A Lady's Request",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": [],
+            "description": "Escort Lady Katrin Voss to secret destination.",
+            "objectives": [{"text": "Escort Lady", "completed": false}]
+        },
+        {
+            "id": "quest_side_missing_servant",
+            "name": "The Vanished Servant",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_expose_order", "quest_main_cure_duke"],
+            "description": "Find missing servant Berta.",
+            "objectives": [{"text": "Investigate disappearance", "completed": false}, {"text": "Rescue Berta", "completed": false}]
+        },
+        {
+            "id": "quest_side_bronja_bandits",
+            "name": "Wolves on the Road",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": [],
+            "description": "Deal with bandits near Bronja.",
+            "objectives": [{"text": "Deal with bandits", "completed": false}]
+        },
+        {
+            "id": "quest_side_innskirk_supplies",
+            "name": "Supplies for the Hills",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_find_aldwin"],
+            "description": "Deliver supplies to Innskirk.",
+            "objectives": [{"text": "Deliver supplies", "completed": false}]
+        },
+        {
+            "id": "quest_side_scryers_revelation",
+            "name": "Secrets of Scryer's Bluff",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_investigate_source", "quest_main_stop_convergence"],
+            "description": "Explore ancient ruins for lore.",
+            "objectives": [{"text": "Explore ruins", "completed": false}]
+        },
+        {
+            "id": "quest_bounty_petyr_debt",
+            "name": "The Noble's Gambling Debt",
+            "type": "Personal",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_side_harren_redemption"],
+            "description": "Help Petyr Valdris with his debt.",
+            "objectives": [{"text": "Resolve debt", "completed": false}]
+        },
+        {
+            "id": "quest_side_widow_letter",
+            "name": "A Widow's Request",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_side_harren_redemption", "quest_main_expose_order", "quest_bounty_deserter_secret"],
+            "description": "Retrieve letter from Marta.",
+            "objectives": [{"text": "Get letter", "completed": false}]
+        },
+        {
+            "id": "quest_side_orphan_pip",
+            "name": "The Child Who Saw",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_expose_order", "quest_main_investigate_source"],
+            "description": "Listen to Pip's story.",
+            "objectives": [{"text": "Earn trust", "completed": false}]
+        },
+        {
+            "id": "quest_side_bandit_redemption",
+            "name": "The Desperate Bandits",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Deal with Red Marsh's bandits.",
+            "objectives": [{"text": "Find camp", "completed": false}]
+        },
+        {
+            "id": "quest_faction_supply_run",
+            "name": "Supplies for the Exiled",
+            "type": "Faction",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_find_aldwin"],
+            "description": "Deliver supplies to Aldwin secretly.",
+            "objectives": [{"text": "Deliver supplies", "completed": false}]
+        },
+        {
+            "id": "quest_road_wounded_lightwarden",
+            "name": "The Wounded Lightwarden",
+            "type": "Other",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Help wounded Lightwarden Cara.",
+            "objectives": [{"text": "Help Cara", "completed": false}]
+        },
+        {
+            "id": "quest_side_gambling_debt",
+            "name": "Debts and Shadows",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_bounty_petyr_debt"],
+            "description": "Investigate gambling ring.",
+            "objectives": [{"text": "Investigate", "completed": false}]
+        },
+        {
+            "id": "quest_side_veterans_memory",
+            "name": "The Veterans Remember",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_side_harren_redemption", "quest_side_widow_letter"],
+            "description": "Talk to veterans about Thornfield.",
+            "objectives": [{"text": "Talk to veterans", "completed": false}]
+        },
+        {
+            "id": "quest_side_forest_terror",
+            "name": "The Forest's Sickness",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_investigate_source", "quest_main_expose_order"],
+            "description": "Witness Order herding monsters.",
+            "objectives": [{"text": "Witness events", "completed": false}]
+        },
+        {
+            "id": "quest_side_refugee_stories",
+            "name": "Voices from the Ashes",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Collect refugee stories.",
+            "objectives": [{"text": "Collect stories", "completed": false}]
+        },
+        {
+            "id": "quest_side_night_ships",
+            "name": "Ships in the Dark",
+            "type": "Side",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Investigate night ships in Soffen.",
+            "objectives": [{"text": "Investigate", "completed": false}]
+        },
+        {
+            "id": "quest_side_haunted_farm",
+            "name": "The Haunted Farmstead",
+            "type": "Side",
+            "status": "Active",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Investigate 'haunted' farm.",
+            "objectives": [{"text": "Investigate", "completed": false}]
+        },
+        {
+            "id": "quest_personal_noble_cure",
+            "name": "The Poisoned Rose",
+            "type": "Personal",
+            "status": "Not Started",
+            "prerequisiteIds": [],
+            "description": "Cure Lady Corinne.",
+            "objectives": [{"text": "Cure Corinne", "completed": false}]
+        },
+        {
+            "id": "quest_personal_veteran_purpose",
+            "name": "The Broken Sword",
+            "type": "Personal",
+            "status": "Not Started",
+            "prerequisiteIds": [],
+            "description": "Help Sergeant Bors.",
+            "objectives": [{"text": "Help Bors", "completed": false}]
+        },
+        {
+            "id": "quest_side_anshari_investigation",
+            "name": "The Silent Grove",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_expose_order"],
+            "description": "Investigate destroyed grove.",
+            "objectives": [{"text": "Investigate", "completed": false}]
+        },
+        {
+            "id": "quest_side_deep_mines",
+            "name": "Secrets Beneath the Stone",
+            "type": "Side",
+            "status": "Unknown",
+            "prerequisiteIds": ["quest_main_stop_convergence"],
+            "description": "Explore deep mines.",
+            "objectives": [{"text": "Explore", "completed": false}]
+        },
+        {
+            "id": "quest_bounty_deserter_secret",
+            "name": "The Deserter's Testimony",
+            "type": "Bounty",
+            "status": "Not Started",
+            "prerequisiteIds": ["quest_side_harren_redemption", "quest_main_expose_order"],
+            "description": "Find Bran.",
+            "objectives": [{"text": "Find Bran", "completed": false}]
+        }
+    ];
+
+    // --- VISUALIZATION LOGIC ---
+
+    let network = null;
+    let allNodes = [];
+    let allEdges = [];
+
+    // Colors
+    const colors = {
+        Main: { bg: "#FFD700", border: "#FFF", highlight: "#FFED85" },
+        Side: { bg: "#97C2FC", border: "#FFF", highlight: "#D2E5FF" },
+        Personal: { bg: "#E0B0FF", border: "#FFF", highlight: "#EFD9FF" },
+        Faction: { bg: "#C2FABC", border: "#FFF", highlight: "#E3FCE0" },
+        Other: { bg: "#CCCCCC", border: "#FFF", highlight: "#EEEEEE" },
+        Completed: { bg: "#666666", border: "#999999", highlight: "#888888" }
+    };
+
+    function getType(quest) {
+        if (quest.type === 'Bounty') return 'Side';
+        if (quest.type === 'Errand') return 'Other';
+        return quest.type || 'Other';
+    }
+
+    function buildData(quests) {
+        const nodes = [];
+        const edges = [];
+        const ids = new Set();
+
+        quests.forEach(q => {
+            ids.add(q.id);
+            let type = getType(q);
+            let colorSet = colors[type] || colors.Other;
+
+            // Override for completed
+            if (q.status === "Completed") {
+                colorSet = colors.Completed;
+            }
+
+            nodes.push({
+                id: q.id,
+                label: q.name,
+                title: q.type, // Tooltip
+                color: {
+                    background: colorSet.bg,
+                    border: colorSet.border,
+                    highlight: { background: colorSet.highlight, border: colorSet.border }
+                },
+                borderWidth: 2,
+                shadow: true,
+                shape: 'box',
+                margin: 10,
+                font: { size: 16, face: 'Segoe UI', color: q.status === "Completed" ? "#aaa" : "#000" },
+                data: q // Store full quest data
+            });
+
+            // Edges based on prerequisites
+            if (q.prerequisiteIds && q.prerequisiteIds.length > 0) {
+                q.prerequisiteIds.forEach(targetId => {
+                    // Note: Prerequisite means Target must be done BEFORE current.
+                    // Flow usually visualized: Prereq -> Quest.
+                    // So if A is prereq for B, arrow A -> B.
+                    // The data structure says "prerequisiteIds": ["quest_main_session2"] for Quest 1?
+                    // Wait, let's check the data.
+                    // quest_main_session2 has prereq session1.
+                    // Wait, in my extracted data:
+                    // Session 2 has prereq: session1.
+                    // So Session 1 -> Session 2.
+                    // Correct arrow: From Prereq TO Current Quest.
+
+                    // Only add edge if target exists in data
+                    // We need to verify if the IDs match what's in the file
+                    // Sometimes IDs in prereqs might not exist if they are future placeholders
+
+                    edges.push({
+                        from: targetId,
+                        to: q.id,
+                        arrows: 'to',
+                        color: { color: '#666', opacity: 0.6 },
+                        width: 1
+                    });
+                });
+            }
+        });
+
+        // Filter edges where nodes don't exist (to prevent errors)
+        const filteredEdges = edges.filter(e => ids.has(e.from) && ids.has(e.to));
+
+        return { nodes, edges: filteredEdges };
+    }
+
+    function initNetwork(quests) {
+        const data = buildData(quests);
+        const container = document.getElementById('mynetwork');
+
+        const options = {
+            layout: {
+                hierarchical: {
+                    enabled: false, // Start with physics layout for web-like feel
+                    direction: 'LR',
+                    sortMethod: 'directed'
+                }
+            },
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: -2000,
+                    centralGravity: 0.3,
+                    springLength: 95,
+                    springConstant: 0.04,
+                    damping: 0.09,
+                    avoidOverlap: 0.1
+                },
+                stabilization: { iterations: 150 }
+            },
+            interaction: { hover: true, tooltipDelay: 200 }
+        };
+
+        network = new vis.Network(container, data, options);
+
+        network.on("click", function (params) {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const nodeData = data.nodes.find(n => n.id === nodeId).data;
+                showDetails(nodeData);
+            } else {
+                closePanel();
+            }
+        });
+    }
+
+    function showDetails(quest) {
+        const panel = document.getElementById('details-panel');
+        const content = document.getElementById('panel-content');
+
+        let statusColor = "#888";
+        if(quest.status === "Active") statusColor = "#4CAF50";
+        if(quest.status === "Completed") statusColor = "#9E9E9E";
+
+        let html = `
+            <h2>${quest.name}</h2>
+            <div>
+                <span class="meta-tag tag-main">${quest.type}</span>
+                <span class="meta-tag tag-status" style="color:${statusColor}">${quest.status}</span>
+            </div>
+
+            <div class="section">
+                <h3>Description</h3>
+                <p>${quest.description || "No description."}</p>
+            </div>
+
+            <div class="section">
+                <h3>Objectives</h3>
+                ${(quest.objectives || []).map(obj => `
+                    <div class="objective">
+                        <span class="checkbox">${obj.completed ? "☑" : "☐"}</span>
+                        <span>${obj.text}</span>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="section">
+                <h3>Rewards</h3>
+                <p>${quest.rewards || "None listed."}</p>
+            </div>
+        `;
+
+        if (quest.runGuide || quest.secrets) {
+            html += `
+                <div class="spoiler-box">
+                    <div class="spoiler-header" onclick="this.nextElementSibling.classList.toggle('visible')">
+                        ⚠ DM SECRETS (Click to Show)
+                    </div>
+                    <div class="spoiler-content">
+                        ${quest.runGuide ? `<p><strong>Guide:</strong><br>${quest.runGuide.replace(/\n/g, '<br>')}</p>` : ''}
+                        ${quest.secrets ? `<p><strong>Secrets:</strong><br>${quest.secrets}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        content.innerHTML = html;
+        panel.classList.remove('hidden');
+    }
+
+    function closePanel() {
+        document.getElementById('details-panel').classList.add('hidden');
+    }
+
+    function togglePhysics() {
+        const btn = document.getElementById('physicsBtn');
+        if (network.physics.physicsEnabled) {
+            network.setOptions({ physics: false });
+            btn.innerText = "Unfreeze Layout";
+        } else {
+            network.setOptions({ physics: true });
+            btn.innerText = "Freeze Layout";
+        }
+    }
+
+    function fitView() {
+        network.fit({ animation: true });
+    }
+
+    // --- FILE HANDLING ---
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                if (json.quests) {
+                    initNetwork(json.quests);
+                    document.getElementById('file-name').innerText = `Loaded: ${file.name}`;
+                } else {
+                    alert("Invalid file format: No 'quests' array found.");
+                }
+            } catch (err) {
+                alert("Error parsing JSON: " + err.message);
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    // --- INIT DEFAULT ---
+    // Start with the embedded data immediately
+    initNetwork(defaultQuests);
+
+</script>
+</body>
+</html>

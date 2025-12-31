@@ -1,0 +1,231 @@
+{
+  "_instructions": "Fill out this template with your campaign data. Remove this _instructions field before importing. All IDs should be unique strings (use format like 'npc_1', 'loc_1', etc.). Dates use format 'YYYY-MM-DD'. Link entities by their IDs in the appropriate arrays.",
+
+  "campaignName": "Your Campaign Name",
+
+  "calendar": {
+    "currentDate": "1492-03-15",
+    "currentTimeOfDay": "morning",
+    "currentHour": 9,
+    "daysInMonth": [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+    "monthNames": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "weekDays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "era": "DR"
+  },
+
+  "weather": {
+    "current": "clear",
+    "temperature": "mild",
+    "wind": "calm",
+    "precipitation": "none",
+    "description": "Clear skies with mild temperatures.",
+    "season": "spring",
+    "_options": {
+      "current": ["clear", "partly_cloudy", "cloudy", "light_rain", "rain", "thunderstorm", "fog", "light_snow", "snow", "sleet", "freezing_rain", "heatwave", "windy", "drizzle"],
+      "temperature": ["freezing", "cold", "cool", "mild", "warm", "hot"],
+      "wind": ["calm", "light", "moderate", "strong", "gale"],
+      "precipitation": ["none", "light", "moderate", "heavy"],
+      "season": ["spring", "summer", "autumn", "winter"]
+    }
+  },
+
+  "npcs": [
+    {
+      "id": "npc_1",
+      "name": "NPC Full Name",
+      "race": "Human",
+      "class": "Commoner",
+      "occupation": "Innkeeper",
+      "location": "loc_1",
+      "disposition": "friendly",
+      "description": "Physical appearance and notable features.",
+      "personality": "Key personality traits and mannerisms.",
+      "background": "History and background information.",
+      "secrets": "Hidden information only the DM knows.",
+      "notes": "Additional notes.",
+      "tags": ["tag1", "tag2"],
+      "relatedNpcs": ["npc_2"],
+      "relatedQuests": ["quest_1"],
+      "relatedItems": ["item_1"],
+      "_options": {
+        "disposition": ["friendly", "neutral", "hostile", "unknown"],
+        "race_examples": ["Human", "Elf", "Dwarf", "Halfling", "Gnome", "Half-Elf", "Half-Orc", "Tiefling", "Dragonborn"],
+        "class_examples": ["Commoner", "Noble", "Guard", "Merchant", "Fighter", "Wizard", "Cleric", "Rogue", "Ranger", "Paladin", "Bard", "Barbarian", "Monk", "Druid", "Sorcerer", "Warlock"]
+      }
+    }
+  ],
+
+  "locations": [
+    {
+      "id": "loc_1",
+      "name": "Location Name",
+      "type": "City",
+      "region": "Region Name",
+      "description": "Detailed description of the location.",
+      "history": "Historical background.",
+      "pointsOfInterest": "Notable places within or nearby.",
+      "secrets": "Hidden information.",
+      "notes": "Additional notes.",
+      "tags": ["tag1", "tag2"],
+      "relatedNpcs": ["npc_1"],
+      "relatedQuests": ["quest_1"],
+      "relatedLocations": ["loc_2"],
+      "_options": {
+        "type_examples": ["City", "Town", "Village", "Dungeon", "Forest", "Mountain", "Castle", "Temple", "Ruins", "Tavern", "Cave", "Island", "Swamp", "Desert", "Plains"]
+      }
+    }
+  ],
+
+  "shops": [
+    {
+      "id": "shop_1",
+      "name": "Shop Name",
+      "type": "General Store",
+      "location": "loc_1",
+      "owner": "npc_1",
+      "description": "Description of the shop.",
+      "specialties": "What the shop specializes in.",
+      "priceModifier": 1.0,
+      "notes": "Additional notes.",
+      "tags": ["tag1", "tag2"],
+      "inventory": [
+        {
+          "itemId": "item_1",
+          "quantity": 5,
+          "price": 10,
+          "notes": "Special offer"
+        }
+      ],
+      "_options": {
+        "type_examples": ["General Store", "Blacksmith", "Armorer", "Weaponsmith", "Alchemist", "Magic Shop", "Tavern", "Inn", "Stables", "Herbalist", "Jeweler", "Tailor", "Fletcher", "Bookshop"],
+        "priceModifier_note": "1.0 = normal prices, 0.8 = 20% discount, 1.2 = 20% markup"
+      }
+    }
+  ],
+
+  "quests": [
+    {
+      "id": "quest_1",
+      "name": "Quest Title",
+      "type": "Main Quest",
+      "status": "Active",
+      "questGiver": "npc_1",
+      "location": "loc_1",
+      "description": "Quest description and objectives.",
+      "background": "Why this quest exists, context.",
+      "objectives": [
+        { "text": "Objective 1", "completed": false },
+        { "text": "Objective 2", "completed": false }
+      ],
+      "rewards": "Gold, items, reputation, etc.",
+      "complications": "Possible complications or twists.",
+      "secrets": "Hidden aspects of the quest.",
+      "notes": "Session notes and progress.",
+      "tags": ["tag1", "tag2"],
+      "relatedNpcs": ["npc_1"],
+      "relatedLocations": ["loc_1"],
+      "relatedQuests": [],
+      "_options": {
+        "type_examples": ["Main Quest", "Side Quest", "Personal Quest", "Faction Quest", "Random Encounter"],
+        "status": ["Active", "Completed", "Failed", "On Hold", "Unknown"]
+      }
+    }
+  ],
+
+  "items": [
+    {
+      "id": "item_1",
+      "name": "Item Name",
+      "type": "Weapon",
+      "rarity": "Common",
+      "attunement": false,
+      "description": "Item description.",
+      "properties": "Mechanical properties and stats.",
+      "history": "Lore and background.",
+      "currentOwner": "npc_1",
+      "currentLocation": "loc_1",
+      "value": "50 gp",
+      "notes": "Additional notes.",
+      "tags": ["tag1", "tag2"],
+      "_options": {
+        "type_examples": ["Weapon", "Armor", "Potion", "Scroll", "Wondrous Item", "Ring", "Wand", "Staff", "Rod", "Ammunition", "Tool", "Treasure", "Artifact"],
+        "rarity": ["Common", "Uncommon", "Rare", "Very Rare", "Legendary", "Artifact"]
+      }
+    }
+  ],
+
+  "lore": [
+    {
+      "id": "lore_1",
+      "title": "Lore Entry Title",
+      "category": "History",
+      "content": "The main content of the lore entry. Can be multiple paragraphs.",
+      "knownBy": "Who knows this information (public, secret, specific NPCs).",
+      "relatedLore": [],
+      "relatedNpcs": [],
+      "relatedLocations": [],
+      "relatedQuests": [],
+      "tags": ["tag1", "tag2"],
+      "_options": {
+        "category_examples": ["History", "Religion", "Politics", "Geography", "Magic", "Organizations", "Legends", "Prophecy", "Culture", "Economy"]
+      }
+    }
+  ],
+
+  "maps": [
+    {
+      "id": "map_1",
+      "name": "Map Name",
+      "description": "Map description.",
+      "imageData": "base64_encoded_image_or_url",
+      "pins": [
+        {
+          "id": "pin_1",
+          "x": 50,
+          "y": 50,
+          "type": "location",
+          "label": "Pin Label",
+          "linkedEntity": "loc_1",
+          "notes": "Pin notes",
+          "_options": {
+            "type": ["npc", "location", "quest", "shop", "danger", "secret", "treasure", "custom"],
+            "x_y_note": "Percentage values 0-100 representing position on map"
+          }
+        }
+      ],
+      "tags": ["tag1", "tag2"]
+    }
+  ],
+
+  "sessionNotes": [
+    {
+      "id": "session_1",
+      "sessionNumber": 1,
+      "date": "2024-01-15",
+      "title": "Session Title",
+      "summary": "What happened this session.",
+      "notableEvents": "Key moments and decisions.",
+      "npcsEncountered": ["npc_1"],
+      "locationsVisited": ["loc_1"],
+      "questsProgressed": ["quest_1"],
+      "itemsFound": ["item_1"],
+      "notes": "Additional DM notes."
+    }
+  ],
+
+  "settings": {
+    "autoSaveInterval": 5,
+    "weatherChangeInterval": 4,
+    "theme": "dark"
+  },
+
+  "_example_minimal_npc": {
+    "_note": "You can use minimal entries - only id and name are required:",
+    "id": "npc_example",
+    "name": "Simple NPC"
+  },
+
+  "_batch_template": {
+    "_note": "For AI: Generate multiple entities at once. Copy the structure above for each entity type. Ensure all cross-references use valid IDs. Remove all _instructions, _options, _note, and _example fields before importing."
+  }
+}

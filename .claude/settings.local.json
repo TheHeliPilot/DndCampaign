@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm start)",
+      "Bash(ls -la \"C:\\Users\\bucka\\Desktop\\DndCampaign\\icons\"\" 2>/dev/null || dir \"C:UsersbuckaDesktopDndCampaignicons \")",
+      "Bash(dir \"C:\\Users\\bucka\\Desktop\\DndCampaign\\icons\" /b /ad)"
+    ]
+  }
+}

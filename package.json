@@ -1,0 +1,16 @@
+{
+  "name": "dm-screen",
+  "version": "1.0.0",
+  "description": "D&D Dungeon Master Campaign Manager",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging"
+  },
+  "keywords": ["dnd", "dungeon-master", "campaign", "rpg"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^39.2.7"
+  }
+}

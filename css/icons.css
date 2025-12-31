@@ -1,0 +1,338 @@
+/* DM Screen - Icon System */
+/* Uses PNG icons from /icons folder */
+
+/* Base icon class - all icons are PNG images */
+.icon {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(0) invert(0.85); /* Makes icons light colored */
+}
+
+/* Larger icon variants */
+.icon-lg { width: 1.5em; height: 1.5em; }
+.icon-xl { width: 2em; height: 2em; }
+.icon-xxl { width: 3em; height: 3em; }
+
+/* Entity type icons */
+.icon-npcs, .icon-npc { background-image: url('../icons/User/User_01.png'); }
+.icon-locations, .icon-location { background-image: url('../icons/Navigation/Map_Pin.png'); }
+.icon-shops, .icon-shop { background-image: url('../icons/Navigation/Building_02.png'); }
+.icon-quests, .icon-quest { background-image: url('../icons/File/Note.png'); }
+.icon-items, .icon-item { background-image: url('../icons/Interface/Gift.png'); }
+.icon-lore { background-image: url('../icons/Interface/Book.png'); }
+.icon-maps, .icon-map { background-image: url('../icons/Navigation/Map.png'); }
+
+/* App branding */
+.icon-crossed-swords { background-image: url('../icons/ZuesLogoNoBG.png'); }
+
+/* UI action icons */
+.icon-save { background-image: url('../icons/System/Save.png'); }
+.icon-search { background-image: url('../icons/Interface/Search_Magnifying_Glass.png'); }
+.icon-settings { background-image: url('../icons/Interface/Settings.png'); }
+.icon-add { background-image: url('../icons/Edit/Add_Plus.png'); }
+.icon-plus { background-image: url('../icons/Edit/Add_Plus.png'); }
+.icon-minus { background-image: url('../icons/Edit/Remove_Minus.png'); }
+.icon-pan { background-image: url('../icons/Edit/Move.png'); }
+.icon-pin { background-image: url('../icons/Navigation/Map_Pin.png'); }
+.icon-edit { background-image: url('../icons/Edit/Edit_Pencil_01.png'); }
+.icon-delete { background-image: url('../icons/Interface/Trash_Full.png'); }
+.icon-close { background-image: url('../icons/Menu/Close_SM.png'); }
+.icon-check { background-image: url('../icons/Interface/Check.png'); }
+.icon-warning { background-image: url('../icons/Warning/Triangle_Warning.png'); }
+.icon-info { background-image: url('../icons/Warning/Info.png'); }
+.icon-link { background-image: url('../icons/Interface/Link_Horizontal.png'); }
+.icon-unlink { background-image: url('../icons/Interface/Link_Horizontal_Off.png'); }
+.icon-external { background-image: url('../icons/Interface/External_Link.png'); }
+.icon-download { background-image: url('../icons/Interface/Download.png'); }
+.icon-upload { background-image: url('../icons/File/File_Upload.png'); }
+.icon-folder { background-image: url('../icons/File/Folder.png'); }
+.icon-folder-open { background-image: url('../icons/File/Folder_Open.png'); }
+.icon-file { background-image: url('../icons/File/File_Document.png'); }
+.icon-copy { background-image: url('../icons/Edit/Copy.png'); }
+.icon-expand { background-image: url('../icons/Arrow/Expand.png'); }
+.icon-shrink { background-image: url('../icons/Arrow/Shrink.png'); }
+.icon-undock { background-image: url('../icons/System/Window.png'); }
+.icon-list { background-image: url('../icons/Edit/List_Unordered.png'); }
+.icon-filter { background-image: url('../icons/Interface/Filter.png'); }
+.icon-sort { background-image: url('../icons/Edit/Sort_Ascending.png'); }
+.icon-refresh { background-image: url('../icons/Arrow/Arrows_Reload_01.png'); }
+.icon-undo { background-image: url('../icons/Edit/Undo.png'); }
+.icon-redo { background-image: url('../icons/Edit/Redo.png'); }
+.icon-show { background-image: url('../icons/Edit/Show.png'); }
+.icon-hide { background-image: url('../icons/Edit/Hide.png'); }
+.icon-lock { background-image: url('../icons/Interface/Lock.png'); }
+.icon-unlock { background-image: url('../icons/Interface/Lock_Open.png'); }
+.icon-star { background-image: url('../icons/Interface/Star.png'); }
+.icon-heart { background-image: url('../icons/Interface/Heart_01.png'); }
+.icon-bookmark { background-image: url('../icons/Interface/Bookmark.png'); }
+.icon-tag { background-image: url('../icons/Interface/Tag.png'); }
+
+/* Navigation arrows */
+.icon-arrow-up { background-image: url('../icons/Arrow/Arrow_Up_SM.png'); }
+.icon-arrow-down { background-image: url('../icons/Arrow/Arrow_Down_SM.png'); }
+.icon-arrow-left { background-image: url('../icons/Arrow/Arrow_Left_SM.png'); }
+.icon-arrow-right { background-image: url('../icons/Arrow/Arrow_Right_SM.png'); }
+.icon-chevron-up { background-image: url('../icons/Arrow/Chevron_Up.png'); }
+.icon-chevron-down { background-image: url('../icons/Arrow/Chevron_Down.png'); }
+.icon-chevron-left { background-image: url('../icons/Arrow/Chevron_Left.png'); }
+.icon-chevron-right { background-image: url('../icons/Arrow/Chevron_Right.png'); }
+
+/* Map pin icons */
+.icon-pin-npc { background-image: url('../icons/User/User_01.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(3) hue-rotate(180deg); }
+.icon-pin-location { background-image: url('../icons/Navigation/Map_Pin.png'); filter: brightness(0) invert(0.5) sepia(1) saturate(5) hue-rotate(0deg); }
+.icon-pin-quest { background-image: url('../icons/File/Note.png'); filter: brightness(0) invert(0.7) sepia(1) saturate(5) hue-rotate(30deg); }
+.icon-pin-shop { background-image: url('../icons/Navigation/Building_02.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(80deg); }
+.icon-pin-danger { background-image: url('../icons/Warning/Triangle_Warning.png'); filter: brightness(0) invert(0.5) sepia(1) saturate(5) hue-rotate(0deg); }
+.icon-pin-secret { background-image: url('../icons/Interface/Lock.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(3) hue-rotate(260deg); }
+.icon-pin-treasure { background-image: url('../icons/Interface/Gift.png'); filter: brightness(0) invert(0.8) sepia(1) saturate(5) hue-rotate(40deg); }
+.icon-pin-custom { background-image: url('../icons/Navigation/Flag.png'); filter: brightness(0) invert(0.7); }
+
+/* Weather icons */
+.icon-weather-clear { background-image: url('../icons/Environment/Sun.png'); filter: brightness(0) invert(0.9) sepia(1) saturate(5) hue-rotate(30deg); }
+.icon-weather-partly_cloudy { background-image: url('../icons/Environment/Sun.png'); filter: brightness(0) invert(0.8); }
+.icon-weather-cloudy { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.6); }
+.icon-weather-light_rain,
+.icon-weather-drizzle { background-image: url('../icons/Environment/Water_Drop.png'); filter: brightness(0) invert(0.7) sepia(1) saturate(3) hue-rotate(180deg); }
+.icon-weather-rain { background-image: url('../icons/Environment/Water_Drop.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(3) hue-rotate(180deg); }
+.icon-weather-thunderstorm { background-image: url('../icons/Environment/Bulb.png'); filter: brightness(0) invert(0.9) sepia(1) saturate(5) hue-rotate(30deg); }
+.icon-weather-fog { background-image: url('../icons/Environment/Rainbow.png'); filter: brightness(0) invert(0.5); }
+.icon-weather-light_snow,
+.icon-weather-snow { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(1); }
+.icon-weather-sleet,
+.icon-weather-freezing_rain { background-image: url('../icons/Environment/Water_Drop.png'); filter: brightness(0) invert(0.9); }
+.icon-weather-heatwave { background-image: url('../icons/Environment/Sun.png'); filter: brightness(0) invert(0.5) sepia(1) saturate(5) hue-rotate(0deg); }
+.icon-weather-windy { background-image: url('../icons/Environment/Leaf.png'); filter: brightness(0) invert(0.7); }
+
+/* Moon phases - using different filters on moon icon */
+.icon-moon-new { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.2); }
+.icon-moon-waxing-crescent { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.4); }
+.icon-moon-first-quarter { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.5); }
+.icon-moon-waxing-gibbous { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.7); }
+.icon-moon-full { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(1) sepia(0.2) saturate(0.5) hue-rotate(30deg); }
+.icon-moon-waning-gibbous { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.7); }
+.icon-moon-last-quarter { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.5); }
+.icon-moon-waning-crescent { background-image: url('../icons/Environment/Moon.png'); filter: brightness(0) invert(0.4); }
+
+/* Dice icons - custom representation */
+.icon-dice { background-image: url('../icons/Shape/Heptagon.png'); filter: brightness(0) invert(0.85); }
+.icon-d4 { background-image: url('../icons/Shape/Triangle.png'); filter: brightness(0) invert(0.85); }
+.icon-d6 { background-image: url('../icons/Shape/Square.png'); filter: brightness(0) invert(0.85); }
+.icon-d8 { background-image: url('../icons/Shape/Octagon.png'); filter: brightness(0) invert(0.85); }
+.icon-d10 { background-image: url('../icons/Shape/Pentagon.png'); filter: brightness(0) invert(0.85); }
+.icon-d12 { background-image: url('../icons/Shape/Hexagon.png'); filter: brightness(0) invert(0.85); }
+.icon-d20 { background-image: url('../icons/Shape/Decagon.png'); filter: brightness(0) invert(0.85); }
+
+/* Disposition icons for NPCs */
+.icon-friendly { background-image: url('../icons/Interface/Heart_01.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(80deg); }
+.icon-neutral { background-image: url('../icons/Interface/Line_M.png'); filter: brightness(0) invert(0.7); }
+.icon-hostile { background-image: url('../icons/Warning/Triangle_Warning.png'); filter: brightness(0) invert(0.5) sepia(1) saturate(5) hue-rotate(0deg); }
+.icon-unknown { background-image: url('../icons/Warning/Help.png'); filter: brightness(0) invert(0.5); }
+
+/* Status icons */
+.icon-status-active { background-image: url('../icons/Media/Play.png'); filter: brightness(0) invert(0.7) sepia(1) saturate(5) hue-rotate(30deg); }
+.icon-status-completed { background-image: url('../icons/Interface/Check.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(80deg); }
+.icon-status-failed { background-image: url('../icons/Menu/Close_SM.png'); filter: brightness(0) invert(0.5) sepia(1) saturate(5) hue-rotate(0deg); }
+.icon-status-available { background-image: url('../icons/Warning/Circle_Check.png'); filter: brightness(0) invert(0.6) sepia(1) saturate(3) hue-rotate(180deg); }
+.icon-status-on-hold { background-image: url('../icons/Media/Pause.png'); filter: brightness(0) invert(0.7); }
+
+/* Menu icons */
+.icon-menu { background-image: url('../icons/Menu/Hamburger_LG.png'); }
+.icon-more { background-image: url('../icons/Menu/More_Horizontal.png'); }
+.icon-grid { background-image: url('../icons/Menu/More_Grid_Big.png'); }
+
+/* Time and calendar */
+.icon-calendar { background-image: url('../icons/Calendar/Calendar.png'); }
+.icon-clock { background-image: url('../icons/Calendar/Clock.png'); }
+.icon-time { background-image: url('../icons/Calendar/Time.png'); }
+
+/* Communication */
+.icon-note { background-image: url('../icons/File/Note.png'); }
+.icon-message { background-image: url('../icons/Communication/Chat.png'); }
+
+/* Users/Party */
+.icon-user { background-image: url('../icons/User/User_01.png'); }
+.icon-users { background-image: url('../icons/User/Users.png'); }
+.icon-party { background-image: url('../icons/User/Users_Group.png'); }
+
+/* Rarity border accents */
+.rarity-border-common { border-left: 3px solid var(--rarity-common); }
+.rarity-border-uncommon { border-left: 3px solid var(--rarity-uncommon); }
+.rarity-border-rare { border-left: 3px solid var(--rarity-rare); }
+.rarity-border-very-rare { border-left: 3px solid var(--rarity-very-rare); }
+.rarity-border-legendary { border-left: 3px solid var(--rarity-legendary); }
+.rarity-border-artifact { border-left: 3px solid var(--rarity-artifact); }
+
+/* Decorative dividers */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-muted);
+    margin: var(--spacing-md) 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* Icon color modifiers */
+.icon-primary { filter: brightness(0) invert(0.6) sepia(1) saturate(3) hue-rotate(20deg) !important; }
+.icon-success { filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(80deg) !important; }
+.icon-warning { filter: brightness(0) invert(0.7) sepia(1) saturate(5) hue-rotate(30deg) !important; }
+.icon-danger { filter: brightness(0) invert(0.5) sepia(1) saturate(5) hue-rotate(0deg) !important; }
+.icon-muted { filter: brightness(0) invert(0.5) !important; }
+
+/* Weather display panel */
+.weather-display {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--bg-dark);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.weather-current {
+    text-align: center;
+    min-width: 120px;
+}
+
+.weather-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--accent-light);
+}
+
+.weather-icon .icon {
+    width: 3rem;
+    height: 3rem;
+}
+
+.weather-temp {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.weather-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xs);
+}
+
+.weather-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weather-details p {
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.9rem;
+}
+
+/* Time tab content */
+.time-tab-content {
+    padding-top: var(--spacing-md);
+}
+
+/* Entity links section */
+.entity-links {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--bg-dark);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.entity-links h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    color: var(--accent-light);
+    font-size: 1rem;
+}
+
+.entity-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.entity-links-section {
+    background: var(--bg-panel);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+}
+
+.entity-links-section h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.entity-link-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    font-size: 0.9rem;
+}
+
+.entity-link-item:hover {
+    background: var(--bg-panel-light);
+}
+
+.entity-link-item .icon {
+    flex-shrink: 0;
+}
+
+/* Popout/undock window styles */
+.modal-header-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-left: auto;
+}
+
+.btn-icon-small {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon-small:hover {
+    background: var(--bg-panel-light);
+    border-color: var(--accent);
+}
+
+.btn-icon-small .icon {
+    width: 14px;
+    height: 14px;
+}

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DM Screen - Campaign Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/entities.css">
+    <link rel="stylesheet" href="css/icons.css">
+</head>
+<body>
+<div id="app">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <h1 class="app-title"><i class="icon icon-crossed-swords"></i> DM Screen</h1>
+            <span class="campaign-name" id="campaignName">Untitled Campaign</span>
+        </div>
+        <div class="header-center">
+            <div class="time-display" id="timeDisplay">
+                <span class="current-date"></span>
+                <span class="time-of-day"></span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-icon" id="quickSearchBtn" title="Quick Search (Ctrl+K)"><i class="icon icon-search"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="main-nav">
+        <button class="nav-tab active" data-tab="dashboard"><i class="icon icon-grid"></i> Dashboard</button>
+        <button class="nav-tab" data-tab="npcs"><i class="icon icon-npcs"></i> NPCs</button>
+        <button class="nav-tab" data-tab="locations"><i class="icon icon-locations"></i> Locations</button>
+        <button class="nav-tab" data-tab="shops"><i class="icon icon-shops"></i> Shops</button>
+        <button class="nav-tab" data-tab="quests"><i class="icon icon-quests"></i> Quests</button>
+        <button class="nav-tab" data-tab="items"><i class="icon icon-items"></i> Items</button>
+        <button class="nav-tab" data-tab="lore"><i class="icon icon-lore"></i> Lore</button>
+        <button class="nav-tab" data-tab="maps"><i class="icon icon-maps"></i> Maps</button>
+        <button class="nav-tab" data-tab="tools"><i class="icon icon-dice"></i> Tools</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Dashboard Tab -->
+        <section class="tab-content active" id="tab-dashboard">
+            <div class="dashboard-grid">
+                <div class="panel dashboard-time">
+                    <div class="panel-header">
+                        <h2>Time & Date</h2>
+                    </div>
+                    <div class="panel-content" id="dashboardTime"></div>
+                </div>
+                <div class="panel dashboard-weather">
+                    <div class="panel-header">
+                        <h2>Weather</h2>
+                    </div>
+                    <div class="panel-content" id="dashboardWeather"></div>
+                </div>
+                <div class="panel dashboard-quests">
+                    <div class="panel-header">
+                        <h2>Active Quests</h2>
+                    </div>
+                    <div class="panel-content" id="dashboardQuests"></div>
+                </div>
+                <div class="panel dashboard-party">
+                    <div class="panel-header">
+                        <h2>Party</h2>
+                        <button class="btn btn-small" id="editPartyBtn">Edit</button>
+                    </div>
+                    <div class="panel-content" id="dashboardParty"></div>
+                </div>
+                <div class="panel dashboard-notes">
+                    <div class="panel-header">
+                        <h2>Session Notes</h2>
+                    </div>
+                    <div class="panel-content">
+                        <textarea id="sessionNotes" placeholder="Quick notes for this session..."></textarea>
+                    </div>
+                </div>
+                <div class="panel dashboard-recent">
+                    <div class="panel-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <div class="panel-content" id="dashboardRecent"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NPCs Tab -->
+        <section class="tab-content" id="tab-npcs">
+            <div class="entity-view">
+                <div class="entity-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="npcSearch" placeholder="Search NPCs...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="npcFilterDisposition">
+                            <option value="">All Dispositions</option>
+                            <option value="friendly">Friendly</option>
+                            <option value="neutral">Neutral</option>
+                            <option value="hostile">Hostile</option>
+                            <option value="unknown">Unknown</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addNpcBtn">+ Add NPC</button>
+                </div>
+                <div class="entity-list" id="npcList"></div>
+            </div>
+        </section>
+
+        <!-- Locations Tab -->
+        <section class="tab-content" id="tab-locations">
+            <div class="entity-view">
+                <div class="entity-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="locationSearch" placeholder="Search Locations...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="locationFilterType">
+                            <option value="">All Types</option>
+                            <option value="Capital City">Capital City</option>
+                            <option value="City">City</option>
+                            <option value="Town">Town</option>
+                            <option value="Village">Village</option>
+                            <option value="Hamlet">Hamlet</option>
+                            <option value="Settlement">Settlement</option>
+                            <option value="Outpost">Outpost</option>
+                            <option value="Fort">Fort</option>
+                            <option value="Ruins">Ruins</option>
+                            <option value="Dungeon">Dungeon</option>
+                            <option value="Landmark">Landmark</option>
+                            <option value="Wilderness Area">Wilderness Area</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addLocationBtn">+ Add Location</button>
+                </div>
+                <div class="entity-list" id="locationList"></div>
+            </div>
+        </section>
+
+        <!-- Shops Tab -->
+        <section class="tab-content" id="tab-shops">
+            <div class="entity-view">
+                <div class="entity-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="shopSearch" placeholder="Search Shops...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="shopFilterType">
+                            <option value="">All Types</option>
+                            <option value="Tavern">Tavern</option>
+                            <option value="Inn">Inn</option>
+                            <option value="Blacksmith">Blacksmith</option>
+                            <option value="General Store">General Store</option>
+                            <option value="Magic Shop">Magic Shop</option>
+                            <option value="Temple">Temple</option>
+                            <option value="Guild Hall">Guild Hall</option>
+                            <option value="Black Market">Black Market</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addShopBtn">+ Add Shop</button>
+                </div>
+                <div class="entity-list" id="shopList"></div>
+            </div>
+        </section>
+
+        <!-- Quests Tab -->
+        <section class="tab-content" id="tab-quests">
+            <div class="entity-view">
+                <div class="entity-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="questSearch" placeholder="Search Quests...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="questFilterStatus">
+                            <option value="">All Statuses</option>
+                            <option value="Not Started">Not Started</option>
+                            <option value="Available">Available</option>
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Failed">Failed</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                        <select id="questFilterType">
+                            <option value="">All Types</option>
+                            <option value="Main">Main</option>
+                            <option value="Side">Side</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Faction">Faction</option>
+                            <option value="Bounty">Bounty</option>
+                            <option value="Errand">Errand</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addQuestBtn">+ Add Quest</button>
+                </div>
+                <div class="entity-list" id="questList"></div>
+            </div>
+        </section>
+
+        <!-- Items Tab -->
+        <section class="tab-content" id="tab-items">
+            <div class="entity-view">
+                <div class="entity-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="itemSearch" placeholder="Search Items...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="itemFilterType">
+                            <option value="">All Types</option>
+                            <option value="Weapon">Weapon</option>
+                            <option value="Armor">Armor</option>
+                            <option value="Potion">Potion</option>
+                            <option value="Scroll">Scroll</option>
+                            <option value="Wondrous Item">Wondrous Item</option>
+                            <option value="Mundane">Mundane</option>
+                            <option value="Quest Item">Quest Item</option>
+                            <option value="Currency">Currency</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select id="itemFilterRarity">
+                            <option value="">All Rarities</option>
+                            <option value="Common">Common</option>
+                            <option value="Uncommon">Uncommon</option>
+                            <option value="Rare">Rare</option>
+                            <option value="Very Rare">Very Rare</option>
+                            <option value="Legendary">Legendary</option>
+                            <option value="Artifact">Artifact</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addItemBtn">+ Add Item</button>
+                </div>
+                <div class="entity-list" id="itemList"></div>
+            </div>
+        </section>
+
+        <!-- Lore Tab -->
+        <section class="tab-content" id="tab-lore">
+            <div class="entity-view">
+                <div class="entity-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="loreSearch" placeholder="Search Lore...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="loreFilterCategory">
+                            <option value="">All Categories</option>
+                            <option value="History">History</option>
+                            <option value="Religion">Religion</option>
+                            <option value="Faction">Faction</option>
+                            <option value="Legend">Legend</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addLoreBtn">+ Add Lore</button>
+                </div>
+                <div class="entity-list" id="loreList"></div>
+            </div>
+        </section>
+
+        <!-- Maps Tab -->
+        <section class="tab-content" id="tab-maps">
+            <div class="maps-view">
+                <div class="maps-sidebar">
+                    <div class="maps-toolbar">
+                        <button class="btn btn-primary" id="addMapBtn">+ Add Map</button>
+                    </div>
+                    <div class="maps-list" id="mapsList"></div>
+                </div>
+                <div class="maps-canvas-container">
+                    <div class="maps-canvas-toolbar" id="mapToolbar">
+                        <button class="btn btn-small" id="mapZoomIn" title="Zoom In"><i class="icon icon-plus"></i></button>
+                        <button class="btn btn-small" id="mapZoomOut" title="Zoom Out"><i class="icon icon-minus"></i></button>
+                        <button class="btn btn-small" id="mapReset" title="Reset View"><i class="icon icon-refresh"></i></button>
+                        <span class="separator"></span>
+                        <button class="btn btn-small map-tool active" data-tool="pan" title="Pan"><i class="icon icon-pan"></i></button>
+                        <button class="btn btn-small map-tool" data-tool="pin" title="Add Pin"><i class="icon icon-pin"></i></button>
+                    </div>
+                    <div class="maps-canvas" id="mapCanvas">
+                        <div class="map-placeholder">Select or add a map to begin</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Tab -->
+        <section class="tab-content" id="tab-tools">
+            <div class="tools-grid">
+                <!-- Dice Roller -->
+                <div class="panel tool-dice">
+                    <div class="panel-header">
+                        <h2>Dice Roller</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="dice-buttons">
+                            <button class="dice-btn" data-dice="d4">d4</button>
+                            <button class="dice-btn" data-dice="d6">d6</button>
+                            <button class="dice-btn" data-dice="d8">d8</button>
+                            <button class="dice-btn" data-dice="d10">d10</button>
+                            <button class="dice-btn" data-dice="d12">d12</button>
+                            <button class="dice-btn" data-dice="d20">d20</button>
+                            <button class="dice-btn" data-dice="d100">d100</button>
+                        </div>
+                        <div class="dice-custom">
+                            <input type="text" id="customDice" placeholder="e.g., 2d6+3">
+                            <button class="btn" id="rollCustomDice">Roll</button>
+                        </div>
+                        <div class="dice-result" id="diceResult"></div>
+                        <div class="dice-history" id="diceHistory"></div>
+                    </div>
+                </div>
+
+                <!-- Initiative Tracker -->
+                <div class="panel tool-initiative">
+                    <div class="panel-header">
+                        <h2>Initiative Tracker</h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-small" id="addCombatant">+ Add</button>
+                            <button class="btn btn-small" id="clearInitiative">Clear</button>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="initiative-list" id="initiativeList"></div>
+                        <div class="initiative-controls">
+                            <button class="btn" id="nextTurn">Next Turn</button>
+                            <button class="btn" id="prevTurn">Prev Turn</button>
+                            <span class="round-counter">Round: <span id="roundCount">1</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Random Generator -->
+                <div class="panel tool-random">
+                    <div class="panel-header">
+                        <h2>Random Generators</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="generator-section">
+                            <h3>Name Generator</h3>
+                            <select id="nameRace">
+                                <option value="human">Human</option>
+                                <option value="elf">Elf</option>
+                                <option value="dwarf">Dwarf</option>
+                                <option value="halfling">Halfling</option>
+                                <option value="orc">Orc</option>
+                                <option value="tiefling">Tiefling</option>
+                                <option value="dragonborn">Dragonborn</option>
+                            </select>
+                            <select id="nameGender">
+                                <option value="any">Any</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                            <button class="btn" id="generateName">Generate</button>
+                            <div class="generator-result" id="nameResult"></div>
+                        </div>
+                        <div class="generator-section">
+                            <h3>Random Encounter</h3>
+                            <select id="encounterDifficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                                <option value="deadly">Deadly</option>
+                            </select>
+                            <button class="btn" id="generateEncounter">Generate</button>
+                            <div class="generator-result" id="encounterResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Reference -->
+                <div class="panel tool-reference">
+                    <div class="panel-header">
+                        <h2>Quick Reference</h2>
+                    </div>
+                    <div class="panel-content">
+                        <details class="reference-section">
+                            <summary>Conditions</summary>
+                            <div class="reference-content" id="refConditions"></div>
+                        </details>
+                        <details class="reference-section">
+                            <summary>Actions in Combat</summary>
+                            <div class="reference-content" id="refActions"></div>
+                        </details>
+                        <details class="reference-section">
+                            <summary>Cover Rules</summary>
+                            <div class="reference-content" id="refCover"></div>
+                        </details>
+                        <details class="reference-section">
+                            <summary>Light & Vision</summary>
+                            <div class="reference-content" id="refLight"></div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal Container -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Modal Title</h2>
+            <button class="modal-close" id="modalClose">×</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+    </div>
+</div>
+
+<!-- Quick Search Modal -->
+<div class="quick-search-overlay" id="quickSearchOverlay">
+    <div class="quick-search">
+        <input type="text" id="quickSearchInput" placeholder="Search everything...">
+        <div class="quick-search-results" id="quickSearchResults"></div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Scripts -->
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
