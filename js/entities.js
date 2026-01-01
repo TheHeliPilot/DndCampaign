@@ -109,6 +109,36 @@ const Entities = {
                 { name: 'relatedQuestIds', label: 'Related Quests', type: 'links', linkType: 'quests' },
                 { name: 'notes', label: 'Notes', type: 'textarea' }
             ]
+        },
+        pcs: {
+            title: 'Player Character',
+            fields: [
+                { name: 'name', label: 'Character Name', type: 'text', required: true },
+                { name: 'playerName', label: 'Player Name', type: 'text' },
+                { name: 'concept', label: 'Concept', type: 'text', placeholder: 'e.g., The Fallen Knight, The Hidden Faithful' },
+                { name: 'race', label: 'Race', type: 'select', options: ['Human', 'Human (Osmonti)', 'Elf', 'Dwarf', 'Halfling', 'Half-Elf', 'Half-Orc', 'Gnome', 'Other'] },
+                { name: 'class', label: 'Class', type: 'select', options: ['Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard'] },
+                { name: 'subclass', label: 'Subclass', type: 'text' },
+                { name: 'level', label: 'Level', type: 'number' },
+                { name: 'background', label: 'Background', type: 'text' },
+                { name: 'status', label: 'Status', type: 'select', options: ['active', 'inactive', 'dead', 'retired'] },
+                { name: 'summary', label: 'Summary', type: 'textarea', placeholder: 'Brief character concept and hook' },
+                { name: 'backstory', label: 'Backstory', type: 'textarea', rows: 8 },
+                { name: 'personalQuestName', label: 'Personal Quest', type: 'text' },
+                { name: 'personalQuestDescription', label: 'Quest Description', type: 'textarea' },
+                { name: 'personalQuestObjectives', label: 'Quest Objectives', type: 'textarea', placeholder: 'One objective per line' },
+                { name: 'playerChoices', label: 'Player Choices', type: 'textarea', placeholder: 'What the player gets to decide' },
+                { name: 'startingEquipment', label: 'Starting Equipment', type: 'textarea' },
+                { name: 'statBlock', label: 'Stats', type: 'textarea', placeholder: 'STR, DEX, CON, INT, WIS, CHA, AC, HP' },
+                { name: 'features', label: 'Class Features', type: 'textarea' },
+                { name: 'proficiencies', label: 'Proficiencies', type: 'textarea' },
+                { name: 'roleplayNotes', label: 'Roleplay Notes', type: 'textarea' },
+                { name: 'npcConnections', label: 'Connected NPCs', type: 'links', linkType: 'npcs' },
+                { name: 'locationConnections', label: 'Connected Locations', type: 'links', linkType: 'locations' },
+                { name: 'questConnections', label: 'Connected Quests', type: 'links', linkType: 'quests' },
+                { name: 'portrait', label: 'Portrait URL', type: 'url' },
+                { name: 'sessionNotes', label: 'Session Notes', type: 'textarea', rows: 6 }
+            ]
         }
     },
 
@@ -126,6 +156,7 @@ const Entities = {
         document.getElementById('addQuestBtn')?.addEventListener('click', () => this.openEntityForm('quests'));
         document.getElementById('addItemBtn')?.addEventListener('click', () => this.openEntityForm('items'));
         document.getElementById('addLoreBtn')?.addEventListener('click', () => this.openEntityForm('lore'));
+        document.getElementById('addPcBtn')?.addEventListener('click', () => this.openEntityForm('pcs'));
     },
 
     setupSearchAndFilters() {
@@ -196,6 +227,20 @@ const Entities = {
         if (loreFilter) {
             loreFilter.addEventListener('change', () => this.renderEntityList('lore'));
         }
+
+        // PC search and filter
+        const pcSearch = document.getElementById('pcSearch');
+        const pcStatusFilter = document.getElementById('pcFilterStatus');
+        const pcClassFilter = document.getElementById('pcFilterClass');
+        if (pcSearch) {
+            pcSearch.addEventListener('input', Utils.debounce(() => this.renderEntityList('pcs'), 200));
+        }
+        if (pcStatusFilter) {
+            pcStatusFilter.addEventListener('change', () => this.renderEntityList('pcs'));
+        }
+        if (pcClassFilter) {
+            pcClassFilter.addEventListener('change', () => this.renderEntityList('pcs'));
+        }
     },
 
     // Render entity list
@@ -207,7 +252,8 @@ const Entities = {
             shops: 'shopList',
             quests: 'questList',
             items: 'itemList',
-            lore: 'loreList'
+            lore: 'loreList',
+            pcs: 'pcList'
         };
         const listEl = document.getElementById(listIdMap[type]);
         if (!listEl) return;
@@ -242,6 +288,11 @@ const Entities = {
             case 'lore':
                 query = document.getElementById('loreSearch')?.value || '';
                 filters.category = document.getElementById('loreFilterCategory')?.value || '';
+                break;
+            case 'pcs':
+                query = document.getElementById('pcSearch')?.value || '';
+                filters.status = document.getElementById('pcFilterStatus')?.value || '';
+                filters.class = document.getElementById('pcFilterClass')?.value || '';
                 break;
         }
 
@@ -330,9 +381,26 @@ const Entities = {
                 subtitle = entity.category || '';
                 description = entity.content;
                 break;
+            case 'pcs':
+                subtitle = [entity.class, entity.race].filter(Boolean).join(' • ');
+                if (entity.level) {
+                    subtitle += ` • Level ${entity.level}`;
+                }
+                const statusColors = {
+                    'active': 'tag-friendly',
+                    'inactive': 'tag-neutral',
+                    'dead': 'tag-hostile',
+                    'retired': 'tag-unknown'
+                };
+                tags = `<span class="tag ${statusColors[entity.status] || 'tag-neutral'}">${entity.status || 'active'}</span>`;
+                if (entity.playerName) {
+                    tags += ` <span class="tag tag-neutral">${Utils.escapeHtml(entity.playerName)}</span>`;
+                }
+                description = entity.concept || entity.summary;
+                break;
         }
 
-        const portrait = (type === 'npcs' && entity.portrait) || (type === 'items' && entity.image);
+        const portrait = (type === 'npcs' && entity.portrait) || (type === 'items' && entity.image) || (type === 'pcs' && entity.portrait);
 
         const singularType = type.replace(/s$/, '');
         const defaultIcon = `<div class="entity-card-portrait entity-card-icon"><i class="icon icon-${singularType} icon-lg"></i></div>`;
@@ -386,10 +454,13 @@ const Entities = {
                 detailHtml = this.renderQuestDetail(entity, linkedEntities);
                 break;
             case 'items':
-                detailHtml = this.renderItemDetail(entity);
+                detailHtml = this.renderItemDetail(entity, linkedEntities);
                 break;
             case 'lore':
                 detailHtml = this.renderLoreDetail(entity, linkedEntities);
+                break;
+            case 'pcs':
+                detailHtml = this.renderPcDetail(entity, linkedEntities);
                 break;
         }
 
@@ -455,10 +526,13 @@ const Entities = {
                 detailHtml = this.renderQuestDetail(entity, linkedEntities);
                 break;
             case 'items':
-                detailHtml = this.renderItemDetail(entity);
+                detailHtml = this.renderItemDetail(entity, linkedEntities);
                 break;
             case 'lore':
                 detailHtml = this.renderLoreDetail(entity, linkedEntities);
+                break;
+            case 'pcs':
+                detailHtml = this.renderPcDetail(entity, linkedEntities);
                 break;
         }
 
@@ -668,15 +742,17 @@ const Entities = {
                 <div class="entity-detail-header">
                     <h2>${Utils.escapeHtml(entity.name)}</h2>
                     <div class="entity-detail-subtitle">
-                        ${entity.type || 'Location'}
-                        ${entity.population ? ` - Population: ${Utils.escapeHtml(entity.population)}` : ''}
+                        ${entity.type || 'Location'}${entity.region ? ` • ${Utils.escapeHtml(entity.region)}` : ''}
+                        ${entity.population ? ` • Pop: ${Utils.escapeHtml(entity.population)}` : ''}
                     </div>
                 </div>
 
-                ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.description)}</p></div>` : ''}
-                ${entity.features ? `<div class="entity-detail-section"><h3>Notable Features</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.features)}</p></div>` : ''}
-                ${entity.secrets ? `<div class="entity-detail-section entity-detail-secret"><h3><i class="icon icon-warning"></i> Secrets (DM Only)</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.secrets)}</p></div>` : ''}
-                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.notes)}</p></div>` : ''}
+                ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><div class="md-content">${Utils.parseMarkdown(entity.description)}</div></div>` : ''}
+                ${entity.history ? `<div class="entity-detail-section"><h3>History</h3><div class="md-content">${Utils.parseMarkdown(entity.history)}</div></div>` : ''}
+                ${entity.features ? `<div class="entity-detail-section"><h3>Notable Features</h3><div class="md-content">${Utils.parseMarkdown(entity.features)}</div></div>` : ''}
+                ${entity.pointsOfInterest ? `<div class="entity-detail-section"><h3>Points of Interest</h3><div class="md-content">${Utils.parseMarkdown(entity.pointsOfInterest)}</div></div>` : ''}
+                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
+                ${entity.secrets ? `<div class="entity-detail-section entity-detail-secret"><h3><i class="icon icon-warning"></i> Secrets (DM Only)</h3><div class="md-content">${Utils.parseMarkdown(entity.secrets)}</div></div>` : ''}
 
                 ${hasConnections ? `
                     <div class="entity-detail-section">
@@ -746,8 +822,9 @@ const Entities = {
                     <div class="entity-detail-subtitle">${entity.type || 'Establishment'}</div>
                 </div>
 
-                ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.description)}</p></div>` : ''}
-                ${entity.inventory ? `<div class="entity-detail-section"><h3>Inventory/Services</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.inventory)}</p></div>` : ''}
+                ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><div class="md-content">${Utils.parseMarkdown(entity.description)}</div></div>` : ''}
+                ${entity.specialties ? `<div class="entity-detail-section"><h3>Specialties</h3><div class="md-content">${Utils.parseMarkdown(entity.specialties)}</div></div>` : ''}
+                ${entity.inventory ? `<div class="entity-detail-section"><h3>Inventory/Services</h3><div class="md-content">${Utils.parseMarkdown(entity.inventory)}</div></div>` : ''}
 
                 ${(entity.priceModifier || entity.hours) ? `
                     <div class="entity-detail-section">
@@ -759,7 +836,14 @@ const Entities = {
                     </div>
                 ` : ''}
 
-                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.notes)}</p></div>` : ''}
+                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
+                
+                ${entity.roleplayGuide ? `
+                    <div class="entity-detail-section entity-detail-secret">
+                        <h3><i class="icon icon-warning"></i> Roleplay Guide (DM Only)</h3>
+                        <div class="md-content">${Utils.parseMarkdown(entity.roleplayGuide)}</div>
+                    </div>
+                ` : ''}
 
                 ${hasConnections ? `
                     <div class="entity-detail-section">
@@ -962,8 +1046,8 @@ const Entities = {
                         <div class="entity-detail-subtitle">${entity.type || 'Item'}</div>
                     </div>
 
-                    ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.description)}</p></div>` : ''}
-                    ${entity.effects ? `<div class="entity-detail-section"><h3>Effects</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.effects)}</p></div>` : ''}
+                    ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><div class="md-content">${Utils.parseMarkdown(entity.description)}</div></div>` : ''}
+                    ${entity.effects ? `<div class="entity-detail-section"><h3>Effects</h3><div class="md-content">${Utils.parseMarkdown(entity.effects)}</div></div>` : ''}
 
                     <div class="entity-detail-section">
                         <h3>Properties</h3>
@@ -974,7 +1058,7 @@ const Entities = {
                         </div>
                     </div>
 
-                    ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.notes)}</p></div>` : ''}
+                    ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
 
                     ${this.renderReferencedBy(linked, shownIds)}
                 </div>
@@ -1005,10 +1089,10 @@ const Entities = {
                 </div>
 
                 <div class="entity-detail-section">
-                    <p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.content)}</p>
+                    <div class="md-content">${Utils.parseMarkdown(entity.content)}</div>
                 </div>
 
-                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><p style="white-space:pre-wrap;">${Utils.escapeHtml(entity.notes)}</p></div>` : ''}
+                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
 
                 ${hasConnections ? `
                     <div class="entity-detail-section">
@@ -1043,6 +1127,160 @@ const Entities = {
                 ` : ''}
 
                 ${this.renderReferencedBy(linked, shownIds)}
+            </div>
+        `;
+    },
+
+    renderPcDetail(entity, linked) {
+        // Get connected entities
+        const connectedNpcs = (entity.npcConnections || []).map(id => DataManager.getEntity('npcs', id)).filter(Boolean);
+        const connectedLocations = (entity.locationConnections || []).map(id => DataManager.getEntity('locations', id)).filter(Boolean);
+        const connectedQuests = (entity.questConnections || []).map(id => DataManager.getEntity('quests', id)).filter(Boolean);
+
+        const shownIds = new Set([
+            ...connectedNpcs.map(e => e.id),
+            ...connectedLocations.map(e => e.id),
+            ...connectedQuests.map(e => e.id)
+        ]);
+
+        const hasConnections = connectedNpcs.length > 0 || connectedLocations.length > 0 || connectedQuests.length > 0;
+
+        // Status badge color
+        const statusColors = {
+            'active': 'tag-friendly',
+            'inactive': 'tag-neutral',
+            'dead': 'tag-hostile',
+            'retired': 'tag-unknown'
+        };
+
+        return `
+            <div class="entity-detail">
+                <div>
+                    ${entity.portrait ? `<img src="${Utils.escapeHtml(entity.portrait)}" alt="${Utils.escapeHtml(entity.name)}" class="entity-detail-portrait">` : '<div class="entity-detail-portrait" style="display:flex;align-items:center;justify-content:center;font-size:3rem;"><i class="icon icon-npcs"></i></div>'}
+                    <div style="text-align:center;margin-top:var(--spacing-sm);">
+                        <span class="tag ${statusColors[entity.status] || 'tag-neutral'}">${entity.status || 'active'}</span>
+                    </div>
+                    ${entity.playerName ? `<div style="text-align:center;margin-top:var(--spacing-sm);color:var(--text-muted);font-size:0.85rem;">Player: ${Utils.escapeHtml(entity.playerName)}</div>` : ''}
+                </div>
+                <div class="entity-detail-main">
+                    <div class="entity-detail-header">
+                        <h2>${Utils.escapeHtml(entity.name || 'Unnamed Character')}</h2>
+                        <div class="entity-detail-subtitle">
+                            ${entity.concept ? `"${Utils.escapeHtml(entity.concept)}"` : ''}
+                        </div>
+                    </div>
+
+                    <div class="entity-detail-section">
+                        <div class="stats-block">
+                            <div class="stat-item"><div class="stat-label">Race</div><div class="stat-value">${entity.race || '—'}</div></div>
+                            <div class="stat-item"><div class="stat-label">Class</div><div class="stat-value">${entity.class || '—'}${entity.subclass ? ` (${entity.subclass})` : ''}</div></div>
+                            <div class="stat-item"><div class="stat-label">Level</div><div class="stat-value">${entity.level || '—'}</div></div>
+                            <div class="stat-item"><div class="stat-label">Background</div><div class="stat-value">${entity.background || '—'}</div></div>
+                        </div>
+                    </div>
+
+                    ${entity.summary ? `<div class="entity-detail-section"><h3>Summary</h3><div class="md-content">${Utils.parseMarkdown(entity.summary)}</div></div>` : ''}
+                    
+                    ${entity.backstory ? `<div class="entity-detail-section"><h3>Backstory</h3><div class="md-content">${Utils.parseMarkdown(entity.backstory)}</div></div>` : ''}
+
+                    ${entity.personalQuestName ? `
+                        <div class="entity-detail-section" style="background: rgba(139, 107, 58, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); border-left: 3px solid var(--warning);">
+                            <h3><i class="icon icon-quests"></i> Personal Quest: ${Utils.escapeHtml(entity.personalQuestName)}</h3>
+                            ${entity.personalQuestDescription ? `<div class="md-content" style="margin-top:var(--spacing-sm);">${Utils.parseMarkdown(entity.personalQuestDescription)}</div>` : ''}
+                            ${entity.personalQuestObjectives ? `
+                                <div style="margin-top:var(--spacing-sm);">
+                                    <strong>Objectives:</strong>
+                                    <ul style="margin-top:var(--spacing-xs);margin-left:var(--spacing-md);">
+                                        ${entity.personalQuestObjectives.split('\n').filter(o => o.trim()).map(o => `<li>${Utils.escapeHtml(o.trim())}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+
+                    ${entity.playerChoices ? `
+                        <div class="entity-detail-section">
+                            <h3>Player Choices</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.playerChoices)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.statBlock ? `
+                        <div class="entity-detail-section">
+                            <h3>Stats</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.statBlock)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.features ? `
+                        <div class="entity-detail-section">
+                            <h3>Class Features</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.features)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.proficiencies ? `
+                        <div class="entity-detail-section">
+                            <h3>Proficiencies</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.proficiencies)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.startingEquipment ? `
+                        <div class="entity-detail-section">
+                            <h3>Starting Equipment</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.startingEquipment)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.roleplayNotes ? `
+                        <div class="entity-detail-section">
+                            <h3>Roleplay Notes</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.roleplayNotes)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.sessionNotes ? `
+                        <div class="entity-detail-section entity-detail-secret">
+                            <h3><i class="icon icon-notes"></i> Session Notes</h3>
+                            <div class="md-content">${Utils.parseMarkdown(entity.sessionNotes)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${hasConnections ? `
+                        <div class="entity-detail-section">
+                            <h3 class="connections-header"><i class="icon icon-link"></i> Connections <span class="connections-count">${connectedNpcs.length + connectedLocations.length + connectedQuests.length}</span></h3>
+                            <div class="entity-links-grid">
+                                ${connectedNpcs.length > 0 ? `
+                                    <div class="links-group links-npcs">
+                                        <div class="links-group-label"><i class="icon icon-npcs"></i> Connected NPCs</div>
+                                        <div class="entity-links-list">
+                                            ${connectedNpcs.map(n => `<span class="entity-link" data-type="npcs" data-id="${n.id}"><i class="icon icon-npc"></i> ${Utils.escapeHtml(n.name)}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${connectedLocations.length > 0 ? `
+                                    <div class="links-group links-locations">
+                                        <div class="links-group-label"><i class="icon icon-locations"></i> Connected Locations</div>
+                                        <div class="entity-links-list">
+                                            ${connectedLocations.map(l => `<span class="entity-link" data-type="locations" data-id="${l.id}"><i class="icon icon-location"></i> ${Utils.escapeHtml(l.name)}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${connectedQuests.length > 0 ? `
+                                    <div class="links-group links-quests">
+                                        <div class="links-group-label"><i class="icon icon-quests"></i> Connected Quests</div>
+                                        <div class="entity-links-list">
+                                            ${connectedQuests.map(q => `<span class="entity-link" data-type="quests" data-id="${q.id}"><i class="icon icon-quest"></i> ${Utils.escapeHtml(q.name)}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${this.renderReferencedBy(linked, shownIds)}
+                </div>
             </div>
         `;
     },

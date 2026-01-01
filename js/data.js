@@ -463,7 +463,7 @@ const DataManager = {
             this.data.settings.autoSaveInterval = 5;
         }
         // Ensure all entity arrays exist
-        const entityTypes = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'maps', 'party'];
+        const entityTypes = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'maps', 'party', 'pcs'];
         entityTypes.forEach(type => {
             if (!this.data[type]) {
                 this.data[type] = [];
@@ -822,7 +822,7 @@ const DataManager = {
             const imported = JSON.parse(jsonString);
 
             if (options.merge) {
-                const entityTypes = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'maps'];
+                const entityTypes = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'maps', 'pcs'];
                 entityTypes.forEach(type => {
                     if (imported[type] && Array.isArray(imported[type])) {
                         const existingIds = new Set(this.data[type].map(e => e.id));
@@ -914,7 +914,7 @@ const DataManager = {
         if (query) {
             const lowerQuery = query.toLowerCase();
             entities = entities.filter(e => {
-                const searchFields = ['name', 'title', 'description', 'notes', 'content'];
+                const searchFields = ['name', 'title', 'description', 'notes', 'content', 'concept', 'summary', 'backstory', 'playerName'];
                 return searchFields.some(field =>
                     e[field] && e[field].toLowerCase().includes(lowerQuery)
                 );
@@ -935,7 +935,7 @@ const DataManager = {
         if (!query) return [];
 
         const results = [];
-        const types = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore'];
+        const types = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'pcs'];
         const lowerQuery = query.toLowerCase();
 
         types.forEach(type => {
@@ -1024,7 +1024,7 @@ const DataManager = {
 
     findReverseLinks(type, id) {
         const reverseLinks = {};
-        const typesToCheck = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore'];
+        const typesToCheck = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'pcs'];
 
         typesToCheck.forEach(checkType => {
             if (checkType === type) return;
@@ -1047,7 +1047,7 @@ const DataManager = {
     },
 
     cleanupReferences(deletedType, deletedId) {
-        const typesToCheck = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'maps'];
+        const typesToCheck = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore', 'maps', 'pcs'];
 
         typesToCheck.forEach(type => {
             this.data[type].forEach(entity => {

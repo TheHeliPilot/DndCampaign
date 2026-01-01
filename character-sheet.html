@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Character Sheet - {{charName}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --c-dark: #1a1510;
+            --c-accent: #8b7355;
+            --c-light: #f4f1ea;
+            --c-border: #3d3425;
+            --font-head: 'Cinzel', serif;
+            --font-body: 'Crimson Text', serif;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            background-color: #555; /* Dark background for screen viewing */
+            color: var(--c-dark);
+            font-size: 12px;
+        }
+
+        /* --- PAGE STRUCTURE --- */
+        .sheet-page {
+            width: 210mm; /* A4 Width */
+            height: 296mm; /* A4 Height */
+            margin: 20px auto;
+            background: white; /* Paper color */
+            padding: 10mm;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            overflow: hidden; /* Prevents spillover */
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto 1fr;
+            gap: 10px;
+        }
+
+        /* --- SHARED COMPONENTS --- */
+        h1, h2, h3, h4 { margin: 0; font-family: var(--font-head); text-transform: uppercase; color: var(--c-dark); }
+        h1 { font-size: 24pt; font-weight: 900; border-bottom: 2px solid var(--c-dark); margin-bottom: 5px; }
+        h2 { font-size: 14pt; border-bottom: 1px solid var(--c-accent); margin-bottom: 8px; color: var(--c-accent); font-weight: 700; }
+        h3 { font-size: 10pt; font-weight: 700; color: #444; margin-bottom: 2px; }
+
+        .section { border: 2px solid var(--c-border); padding: 8px; border-radius: 4px; position: relative; }
+        .section-label {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background: white;
+            padding: 0 5px;
+            font-family: var(--font-head);
+            font-size: 8pt;
+            font-weight: bold;
+            color: var(--c-border);
+        }
+
+        .field { margin-bottom: 4px; display: flex; align-items: baseline; border-bottom: 1px dotted #ccc; }
+        .field label { font-weight: bold; margin-right: 5px; font-size: 9pt; font-family: var(--font-head); color: #555; }
+        .field .value { flex-grow: 1; font-family: var(--font-body); font-size: 11pt; color: black; padding-left: 5px; min-height: 16px; }
+
+        .box-grid { display: grid; gap: 5px; }
+
+        /* Stats Box Style */
+        .stat-box {
+            text-align: center; border: 1px solid var(--c-border); border-radius: 5px; padding: 5px;
+            background: #faf9f6; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .stat-label { font-family: var(--font-head); font-size: 7pt; font-weight: bold; margin-bottom: 2px; }
+        .stat-mod { font-size: 18pt; font-weight: bold; font-family: var(--font-head); }
+        .stat-score { font-size: 9pt; border: 1px solid #ccc; border-radius: 10px; padding: 1px 6px; background: white; margin-top: 2px; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+        th { text-align: left; border-bottom: 2px solid var(--c-dark); font-family: var(--font-head); font-size: 8pt; padding: 2px; }
+        td { border-bottom: 1px solid #eee; padding: 3px 2px; vertical-align: top; }
+        tr.empty-row td { height: 20px; } /* Space for writing */
+
+        /* Gritty Specifics */
+        .injury-box { border: 1px dashed var(--c-accent); background: #fffdf9; padding: 5px; margin-bottom: 5px; }
+        .bubbles { display: flex; gap: 4px; }
+        .bubble { width: 10px; height: 10px; border: 1px solid #333; border-radius: 50%; }
+
+        /* --- PAGE LAYOUT & HEADER --- */
+        /* UPDATED: Changed from #p1-header to .page-header */
+        .page-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 10px; border-bottom: 3px double var(--c-dark); margin-bottom: 10px; }
+
+        .char-identity { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; flex-grow: 1; margin-left: 20px; }
+
+        #p1-left-col { grid-column: 1 / 4; display: flex; flex-direction: column; gap: 10px; }
+        #p1-mid-col { grid-column: 4 / 9; display: flex; flex-direction: column; gap: 10px; }
+        #p1-right-col { grid-column: 9 / -1; display: flex; flex-direction: column; gap: 10px; }
+
+        /* --- PAGE 2 LAYOUT (Inventory) --- */
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
+        .paper-doll { height: 300px; border: 1px solid #eee; margin: 10px 0; display: flex; align-items: center; justify-content: center; color: #ccc; }
+
+        /* --- PRINT SETTINGS --- */
+        @media print {
+            body { background: white; margin: 0; }
+            .sheet-page { margin: 0; box-shadow: none; page-break-after: always; width: 100%; height: 100%; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sheet-page">
+    <div class="page-header">
+        <div style="flex: 0 0 auto;">
+            <h1>{{charName}}</h1>
+            <div style="font-style: italic; color: #666;">{{race}} {{class}}</div>
+        </div>
+        <div class="char-identity">
+            <div class="field"><label>Level</label><span class="value">{{level}}</span></div>
+            <div class="field"><label>Background</label><span class="value">{{background}}</span></div>
+            <div class="field"><label>Player</label><span class="value">{{playerName}}</span></div>
+            <div class="field"><label>Alignment</label><span class="value">{{alignment}}</span></div>
+            <div class="field"><label>XP</label><span class="value">{{xp}}</span></div>
+            <div class="field"><label>Campaign</label><span class="value">{{campaignName}}</span></div>
+        </div>
+    </div>
+
+    <div id="p1-left-col">
+        <div class="section">
+            <div class="section-label">Attributes</div>
+            <div class="box-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="stat-box">
+                    <div class="stat-label">STRENGTH</div>
+                    <div class="stat-mod">{{strMod}}</div>
+                    <div class="stat-score">{{str}}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">DEXTERITY</div>
+                    <div class="stat-mod">{{dexMod}}</div>
+                    <div class="stat-score">{{dex}}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">CONSTITUTION</div>
+                    <div class="stat-mod">{{conMod}}</div>
+                    <div class="stat-score">{{con}}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">INTELLIGENCE</div>
+                    <div class="stat-mod">{{intMod}}</div>
+                    <div class="stat-score">{{int}}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">WISDOM</div>
+                    <div class="stat-mod">{{wisMod}}</div>
+                    <div class="stat-score">{{wis}}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">CHARISMA</div>
+                    <div class="stat-mod">{{chaMod}}</div>
+                    <div class="stat-score">{{cha}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" style="flex-grow: 1;">
+            <div class="section-label">Proficiencies</div>
+            <div class="field"><label>Prof. Bonus</label><span class="value">+{{profBonus}}</span></div>
+            <div class="field"><label>Passive Perception</label><span class="value">{{passivePerc}}</span></div>
+            <div class="field"><label>Inspiration</label><span class="value" style="border: 1px solid #333; width: 20px; display:inline-block;">&nbsp;</span></div>
+
+            <div style="margin-top: 10px; font-size: 8pt;">
+                <h3>Saving Throws</h3>
+                <div class="field"><label>STR</label><span class="value">{{saveStr}}</span></div>
+                <div class="field"><label>DEX</label><span class="value">{{saveDex}}</span></div>
+                <div class="field"><label>CON</label><span class="value">{{saveCon}}</span></div>
+                <div class="field"><label>INT</label><span class="value">{{saveInt}}</span></div>
+                <div class="field"><label>WIS</label><span class="value">{{saveWis}}</span></div>
+                <div class="field"><label>CHA</label><span class="value">{{saveCha}}</span></div>
+            </div>
+
+            <div style="margin-top: 10px; font-size: 8pt;">
+                <h3>Skills</h3>
+                <div class="field"><label>Acrobatics</label><span class="value">{{skillAcrobatics}}</span></div>
+                <div class="field"><label>Animal Handling</label><span class="value">{{skillAnimal}}</span></div>
+                <div class="field"><label>Arcana</label><span class="value">{{skillArcana}}</span></div>
+                <div class="field"><label>Athletics</label><span class="value">{{skillAthletics}}</span></div>
+                <div class="field"><label>Deception</label><span class="value">{{skillDeception}}</span></div>
+                <div class="field"><label>History</label><span class="value">{{skillHistory}}</span></div>
+                <div class="field"><label>Insight</label><span class="value">{{skillInsight}}</span></div>
+                <div class="field"><label>Intimidation</label><span class="value">{{skillIntimidation}}</span></div>
+                <div class="field"><label>Investigation</label><span class="value">{{skillInvestigation}}</span></div>
+                <div class="field"><label>Medicine</label><span class="value">{{skillMedicine}}</span></div>
+                <div class="field"><label>Nature</label><span class="value">{{skillNature}}</span></div>
+                <div class="field"><label>Perception</label><span class="value">{{skillPerception}}</span></div>
+                <div class="field"><label>Performance</label><span class="value">{{skillPerformance}}</span></div>
+                <div class="field"><label>Persuasion</label><span class="value">{{skillPersuasion}}</span></div>
+                <div class="field"><label>Religion</label><span class="value">{{skillReligion}}</span></div>
+                <div class="field"><label>Sleight of Hand</label><span class="value">{{skillSleight}}</span></div>
+                <div class="field"><label>Stealth</label><span class="value">{{skillStealth}}</span></div>
+                <div class="field"><label>Survival</label><span class="value">{{skillSurvival}}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="p1-mid-col">
+        <div class="section">
+            <div class="section-label">Vitals</div>
+            <div style="display: flex; justify-content: space-between; text-align: center; margin-bottom: 10px;">
+                <div>
+                    <div style="font-size: 16pt; font-weight: bold; border: 2px solid #333; padding: 5px; border-radius: 50%; width: 50px; height: 50px; line-height: 36px;">{{ac}}</div>
+                    <div class="stat-label">Armor Class</div>
+                </div>
+                <div>
+                    <div style="font-size: 16pt; font-weight: bold; border: 2px solid #333; padding: 5px; width: 50px; height: 50px; line-height: 36px;">{{init}}</div>
+                    <div class="stat-label">Initiative</div>
+                </div>
+                <div>
+                    <div style="font-size: 16pt; font-weight: bold; border: 2px solid #333; padding: 5px; width: 50px; height: 50px; line-height: 36px;">{{speed}}</div>
+                    <div class="stat-label">Speed</div>
+                </div>
+            </div>
+
+            <div style="background: #eee; padding: 5px; border-radius: 4px; margin-bottom: 5px;">
+                <div style="display:flex; justify-content:space-between; font-size: 9pt;">
+                    <strong>Hit Points</strong>
+                    <span>Max: {{hpMax}}</span>
+                </div>
+                <div style="border-bottom: 1px solid #aaa; height: 25px;"></div>
+                <div style="font-size: 7pt; color: #666; text-align: right;">Current HP</div>
+            </div>
+
+            <div style="display:flex; gap: 5px;">
+                <div style="flex:1; background: #eee; padding: 5px; border-radius: 4px;">
+                    <div style="font-size: 8pt; font-weight: bold;">Temp HP</div>
+                    <div style="height: 20px; border-bottom: 1px solid #aaa;"></div>
+                </div>
+                <div style="flex:1; background: #eee; padding: 5px; border-radius: 4px;">
+                    <div style="font-size: 8pt; font-weight: bold;">Hit Dice</div>
+                    <div style="text-align:center;">{{hitDice}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-label">Attacks</div>
+            <table>
+                <tr>
+                    <th width="40%">Name</th>
+                    <th width="20%">Atk Bonus</th>
+                    <th width="40%">Damage/Type</th>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td>{{atk1Name}}</td>
+                    <td>{{atk1Bonus}}</td>
+                    <td>{{atk1Dmg}}</td>
+                </tr>
+                <tr>
+                    <td>{{atk2Name}}</td>
+                    <td>{{atk2Bonus}}</td>
+                    <td>{{atk2Dmg}}</td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td>{{atk3Name}}</td>
+                    <td>{{atk3Bonus}}</td>
+                    <td>{{atk3Dmg}}</td>
+                </tr>
+                <tr class="empty-row"><td></td><td></td><td></td></tr>
+            </table>
+            <div style="margin-top: 5px; font-size: 8pt; font-style: italic;">
+                Spell Atk: {{spellAtk}} | Spell DC: {{spellDC}}
+            </div>
+        </div>
+
+        <div class="section" style="flex-grow: 1;">
+            <div class="section-label" style="color: #8b3a3a; border-color: #8b3a3a;">Wounds & Injuries</div>
+            <div style="font-size: 8pt; color: #666; margin-bottom: 5px;">Lingering injuries from crits or 0 HP.</div>
+
+            <div class="injury-box">
+                <div style="font-weight: bold;">Injury: <span style="font-weight: normal;">{{injury1}}</span></div>
+                <div style="font-style: italic; font-size: 8pt;">Effect: {{injury1Effect}}</div>
+            </div>
+            <div class="injury-box">
+                <div style="font-weight: bold;">Injury: <span style="font-weight: normal;">{{injury2}}</span></div>
+                <div style="font-style: italic; font-size: 8pt;">Effect: {{injury2Effect}}</div>
+            </div>
+
+            <div style="margin-top: 10px; border-top: 1px solid #ccc; padding-top: 5px;">
+                <div style="font-weight: bold; font-size: 9pt;">Exhaustion Level</div>
+                <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                    <div class="bubble"></div> 1 (Disadv. Ability)
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                    <div class="bubble"></div> 2 (Speed Halved)
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                    <div class="bubble"></div> 3 (Disadv. Attack/Save)
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                    <div class="bubble"></div> 4 (HP Max Halved)
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                    <div class="bubble"></div> 5 (Speed 0)
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                    <div class="bubble"></div> 6 (Death)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="p1-right-col">
+        <div class="section" style="height: 100%;">
+            <div class="section-label">Features & Traits</div>
+            <div style="white-space: pre-wrap; font-size: 9pt;">{{features}}</div>
+
+            <h3 style="margin-top: 15px;">Proficiencies & Languages</h3>
+            <div style="white-space: pre-wrap; font-size: 9pt;">{{proficiencies}}</div>
+        </div>
+    </div>
+</div>
+
+<div class="sheet-page">
+    <div class="page-header">
+        <h1>Inventory & Logistics</h1>
+    </div>
+
+    <div class="inventory-grid">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="section">
+                <div class="section-label">Worn Equipment</div>
+                <div class="field"><label>Armor</label><span class="value">{{equipArmor}}</span></div>
+                <div class="field"><label>Main Hand</label><span class="value">{{equipMain}}</span></div>
+                <div class="field"><label>Off Hand</label><span class="value">{{equipOff}}</span></div>
+                <div class="field"><label>Cloak</label><span class="value">{{equipCloak}}</span></div>
+                <div class="field"><label>Boots</label><span class="value">{{equipBoots}}</span></div>
+                <div class="field"><label>Neck</label><span class="value">{{equipNeck}}</span></div>
+                <div class="field"><label>Ring 1</label><span class="value">{{equipRing1}}</span></div>
+                <div class="field"><label>Ring 2</label><span class="value">{{equipRing2}}</span></div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">Attunement (Max 3)</div>
+                <div class="field"><span class="value">{{attunement1}}</span></div>
+                <div class="field"><span class="value">{{attunement2}}</span></div>
+                <div class="field"><span class="value">{{attunement3}}</span></div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">Wealth</div>
+                <div style="display: flex; gap: 10px;">
+                    <div style="border: 1px solid #ccc; padding: 5px; text-align: center; flex: 1;">
+                        <div style="font-weight: bold; color: #b8860b;">GP</div>
+                        <div>{{coinGP}}</div>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 5px; text-align: center; flex: 1;">
+                        <div style="font-weight: bold; color: #c0c0c0;">SP</div>
+                        <div>{{coinSP}}</div>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 5px; text-align: center; flex: 1;">
+                        <div style="font-weight: bold; color: #cd7f32;">CP</div>
+                        <div>{{coinCP}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="section" style="flex-grow: 1;">
+                <div class="section-label">Backpack Content</div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 1px solid #333; margin-bottom: 5px;">
+                    <span>Item</span>
+                    <span>Qty</span>
+                </div>
+                <div style="white-space: pre-wrap; line-height: 1.6;">{{backpackContent}}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">Survival Supplies</div>
+                <div class="field"><label>Rations (Days)</label><span class="value">{{rations}}</span></div>
+                <div class="field"><label>Water (Waterskins)</label><span class="value">{{water}}</span></div>
+                <div class="field"><label>Torches / Oil</label><span class="value">{{torches}}</span></div>
+                <div class="field"><label>Healer's Kits</label><span class="value">{{healerKits}}</span></div>
+                <div class="field"><label>Hit Dice Remaining</label><span class="value">{{hitDiceCurrent}} / {{hitDiceMax}}</span></div>
+            </div>
+
+            <div class="section">
+                <div class="section-label">Encumbrance</div>
+                <div class="field"><label>Current Load</label><span class="value">{{currentWeight}} lbs</span></div>
+                <div class="field"><label>Carrying Capacity</label><span class="value">{{maxWeight}} lbs</span></div>
+                <div style="font-size: 8pt; color: #666; margin-top: 5px;">
+                    Overencumbered: Speed -10ft | Heavily Encumbered: Speed -20ft, Disadv. on Ability Checks/Str/Dex/Con
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sheet-page">
+    <div class="page-header">
+        <h1>Grimoire</h1>
+        <div class="char-identity">
+            <div class="field"><label>Class</label><span class="value">{{spellClass}}</span></div>
+            <div class="field"><label>Ability</label><span class="value">{{spellAbility}}</span></div>
+            <div class="field"><label>Save DC</label><span class="value">{{spellDC}}</span></div>
+            <div class="field"><label>Attack Bonus</label><span class="value">{{spellAtk}}</span></div>
+        </div>
+    </div>
+
+    <div class="section" style="margin-bottom: 20px;">
+        <div class="section-label">Spell Slots</div>
+        <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div><strong>1st</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots1}}</div></div>
+            <div><strong>2nd</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots2}}</div></div>
+            <div><strong>3rd</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots3}}</div></div>
+            <div><strong>4th</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots4}}</div></div>
+            <div><strong>5th</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots5}}</div></div>
+            <div><strong>6th</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots6}}</div></div>
+            <div><strong>7th</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots7}}</div></div>
+            <div><strong>8th</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots8}}</div></div>
+            <div><strong>9th</strong><br><div style="border:1px solid #333; width:30px; height:30px; margin-top:5px;">{{slots9}}</div></div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; flex-grow: 1;">
+        <div class="section">
+            <div class="section-label">Cantrips (0 Level)</div>
+            <div style="white-space: pre-wrap;">{{cantrips}}</div>
+        </div>
+        <div class="section">
+            <div class="section-label">1st Level</div>
+            <div style="white-space: pre-wrap;">{{spells1}}</div>
+        </div>
+        <div class="section">
+            <div class="section-label">2nd Level</div>
+            <div style="white-space: pre-wrap;">{{spells2}}</div>
+        </div>
+        <div class="section">
+            <div class="section-label">3rd Level</div>
+            <div style="white-space: pre-wrap;">{{spells3}}</div>
+        </div>
+        <div class="section">
+            <div class="section-label">4th Level</div>
+            <div style="white-space: pre-wrap;">{{spells4}}</div>
+        </div>
+        <div class="section">
+            <div class="section-label">5th Level</div>
+            <div style="white-space: pre-wrap;">{{spells5}}</div>
+        </div>
+    </div>
+</div>
+
+<div class="sheet-page">
+    <div class="page-header">
+        <h1>Lore & Journal</h1>
+    </div>
+
+    <div class="section" style="min-height: 150px;">
+        <div class="section-label">Backstory & Origins</div>
+        <div style="white-space: pre-wrap; font-style: italic;">{{backstory}}</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <div class="section">
+            <div class="section-label">Allies & Organizations</div>
+            <div style="white-space: pre-wrap;">{{allies}}</div>
+        </div>
+        <div class="section">
+            <div class="section-label">Enemies & Rivals</div>
+            <div style="white-space: pre-wrap;">{{enemies}}</div>
+        </div>
+    </div>
+
+    <div class="section" style="margin-top: 10px; flex-grow: 1;">
+        <div class="section-label">Quest Log & Session Notes</div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px; margin-top: 10px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+        <div style="border-bottom: 1px dotted #ccc; height: 30px;"></div>
+    </div>
+</div>
+
+</body>
+</html>

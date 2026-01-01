@@ -85,7 +85,8 @@ const Utils = {
             quests: singular ? 'Quest' : 'Quests',
             items: singular ? 'Item' : 'Items',
             lore: singular ? 'Lore Entry' : 'Lore',
-            maps: singular ? 'Map' : 'Maps'
+            maps: singular ? 'Map' : 'Maps',
+            pcs: singular ? 'Player Character' : 'Player Characters'
         };
         return names[type] || type;
     },

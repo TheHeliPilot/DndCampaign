@@ -52,7 +52,7 @@ const UI = {
         const bodyEl = document.getElementById('modalBody');
         const footerEl = document.getElementById('modalFooter');
 
-        titleEl.textContent = title || '';
+        titleEl.innerHTML = title || '';
         bodyEl.innerHTML = '';
         footerEl.innerHTML = '';
 

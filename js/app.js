@@ -11,6 +11,10 @@ const App = {
         UI.init();
         UI.setupCampaignName();
         Entities.init();
+
+        // Initialize Quest Graph Visualizer
+        if (typeof QuestGraph !== 'undefined') QuestGraph.init();
+
         Maps.init();
         Tools.init();
 
@@ -48,6 +52,11 @@ const App = {
         UI.updateTimeDisplay();
         UI.updateFolderIndicator();
 
+        // Refresh graph if visible
+        if (typeof QuestGraph !== 'undefined' && !document.getElementById('questGraphContainer').classList.contains('hidden')) {
+            QuestGraph.render();
+        }
+
         const sessionNotes = document.getElementById('sessionNotes');
         if (sessionNotes) {
             sessionNotes.value = DataManager.data.sessionNotes || '';
@@ -71,6 +80,7 @@ const App = {
         Entities.renderEntityList('quests');
         Entities.renderEntityList('items');
         Entities.renderEntityList('lore');
+        Entities.renderEntityList('pcs');
     },
 
     updateDashboardTime() {
@@ -113,7 +123,6 @@ const App = {
 
         const weather = DataManager.data.weather;
         const currentTerrain = weather.terrain || 'lowlands';
-        const terrainDisplay = currentTerrain.replace(/_/g, ' ');
 
         const terrainOptions = [
             ['tomber_ranges', 'Tomber Ranges'],
@@ -235,7 +244,6 @@ const App = {
         const container = document.getElementById('dashboardRecent');
         if (!container) return;
 
-        // Collect recent entities from all types
         const allEntities = [];
         const types = ['npcs', 'locations', 'shops', 'quests', 'items', 'lore'];
 
@@ -250,7 +258,6 @@ const App = {
             });
         });
 
-        // Sort by date, most recent first
         allEntities.sort((a, b) => b.date - a.date);
 
         if (allEntities.length === 0) {
@@ -317,7 +324,6 @@ const App = {
                 </div>
             `).join('');
 
-            // Remove handlers
             listEl.querySelectorAll('.remove-member').forEach(btn => {
                 btn.addEventListener('click', () => {
                     party.splice(parseInt(btn.dataset.index), 1);
@@ -325,7 +331,6 @@ const App = {
                 });
             });
 
-            // Update handlers
             const updateMember = (input, field) => {
                 const idx = parseInt(input.dataset.index);
                 let value = input.value;
@@ -377,50 +382,21 @@ const App = {
     }
 };
 
-// Tab initialization functions
-window.initDashboardTab = () => {
-    App.initDashboard();
-};
+window.initDashboardTab = () => { App.initDashboard(); };
+window.initNpcsTab = () => { Entities.renderEntityList('npcs'); };
+window.initLocationsTab = () => { Entities.renderEntityList('locations'); };
+window.initShopsTab = () => { Entities.renderEntityList('shops'); };
+window.initQuestsTab = () => { Entities.renderEntityList('quests'); };
+window.initItemsTab = () => { Entities.renderEntityList('items'); };
+window.initLoreTab = () => { Entities.renderEntityList('lore'); };
+window.initPcsTab = () => { Entities.renderEntityList('pcs'); };
+window.initMapsTab = () => { Maps.renderMapList(); };
+window.initToolsTab = () => { Tools.renderInitiativeList(); Tools.updateDiceHistory(); };
 
-window.initNpcsTab = () => {
-    Entities.renderEntityList('npcs');
-};
-
-window.initLocationsTab = () => {
-    Entities.renderEntityList('locations');
-};
-
-window.initShopsTab = () => {
-    Entities.renderEntityList('shops');
-};
-
-window.initQuestsTab = () => {
-    Entities.renderEntityList('quests');
-};
-
-window.initItemsTab = () => {
-    Entities.renderEntityList('items');
-};
-
-window.initLoreTab = () => {
-    Entities.renderEntityList('lore');
-};
-
-window.initMapsTab = () => {
-    Maps.renderMapList();
-};
-
-window.initToolsTab = () => {
-    Tools.renderInitiativeList();
-    Tools.updateDiceHistory();
-};
-
-// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
 
-// Backup reminder (every 30 minutes of active use)
 let lastBackupReminder = Date.now();
 setInterval(() => {
     const now = Date.now();
