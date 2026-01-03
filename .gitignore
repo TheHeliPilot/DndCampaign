@@ -1,2 +1,11 @@
 ﻿/node_modules/
 /Creatures
+
+# Build artifacts
+/dist/
+/bin/
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.rpm

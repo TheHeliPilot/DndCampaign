@@ -1,0 +1,528 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>D&D Item Cards - Easy Cut</title>
+    <style>
+        /* RESET & PRINT SETUP */
+        * { box-sizing: border-box; }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm; /* Small margin for printer safe zone */
+            }
+            body {
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: white;
+        }
+
+        /* THE GRID */
+        .sheet {
+            width: 190mm; /* Fits comfortably within A4 width (210mm) */
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, auto);
+            border-top: 2px solid black;
+            border-left: 2px solid black;
+        }
+
+        /* THE CARD */
+        .card {
+            height: 88mm; /* Standard poker height */
+            border-right: 2px solid black;
+            border-bottom: 2px solid black;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* HEADER STYLES */
+        .header {
+            border-bottom: 2px solid #000;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+        }
+
+        .title {
+            font-weight: 900;
+            font-size: 13pt;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .meta {
+            font-size: 8pt;
+            font-style: italic;
+            color: #444;
+            margin-top: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* CONTENT STYLES */
+        .body-text {
+            font-size: 9pt;
+            line-height: 1.3;
+            flex-grow: 1;
+        }
+
+        .stats {
+            background: #e0e0e0;
+            font-size: 8pt;
+            padding: 3px 5px;
+            font-weight: bold;
+            margin: 5px 0;
+            border: 1px solid #999;
+        }
+
+        /* TRACKER STYLES */
+        .tracker {
+            margin-top: auto;
+            border-top: 1px dashed #000;
+            padding-top: 4px;
+            text-align: center;
+        }
+
+        .tracker-title {
+            font-size: 7pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .bubbles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .bubble {
+            width: 10px;
+            height: 10px;
+            border: 1px solid #000;
+            background: #fff;
+        }
+
+        /* Specific styling for large amounts (Ammo) */
+        .bubble.small {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%; /* Round bubbles for ammo */
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sheet">
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Rations (Dry)</div>
+            <div class="meta"><span>Consumable</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Compacted dry food (jerky, nuts, hardtack). Eat 1 per day to prevent exhaustion.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">DAYS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Rations (Dry)</div>
+            <div class="meta"><span>Consumable</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Compacted dry food (jerky, nuts, hardtack). Eat 1 per day to prevent exhaustion.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">DAYS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Rations (Dry)</div>
+            <div class="meta"><span>Consumable</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Compacted dry food (jerky, nuts, hardtack). Eat 1 per day to prevent exhaustion.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">DAYS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Torch Bundle</div>
+            <div class="meta"><span>Light Source</span><span>1 lb. each</span></div>
+        </div>
+        <div class="body-text">
+            Burns for 1 hour. Bright light 20ft radius, dim light +20ft. <br><em>Can be used as improvised weapon (1 fire dmg).</em>
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">TORCHES REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Torch Bundle</div>
+            <div class="meta"><span>Light Source</span><span>1 lb. each</span></div>
+        </div>
+        <div class="body-text">
+            Burns for 1 hour. Bright light 20ft radius, dim light +20ft. <br><em>Can be used as improvised weapon (1 fire dmg).</em>
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">TORCHES REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Torch Bundle</div>
+            <div class="meta"><span>Light Source</span><span>1 lb. each</span></div>
+        </div>
+        <div class="body-text">
+            Burns for 1 hour. Bright light 20ft radius, dim light +20ft. <br><em>Can be used as improvised weapon (1 fire dmg).</em>
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">TORCHES REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Waterskin</div>
+            <div class="meta"><span>Container</span><span>5 lb. (full)</span></div>
+        </div>
+        <div class="body-text">
+            Holds 4 pints of liquid. Essential for desert or dungeon travel.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">PINTS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Waterskin</div>
+            <div class="meta"><span>Container</span><span>5 lb. (full)</span></div>
+        </div>
+        <div class="body-text">
+            Holds 4 pints of liquid. Essential for desert or dungeon travel.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">PINTS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Tinderbox</div>
+            <div class="meta"><span>Utility</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Flint, steel, and tinder.
+            <br><strong>Action:</strong> Light a torch or campfire.
+            <br><strong>1 Minute:</strong> Light a candle or lamp.
+        </div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="sheet">
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Potion of Healing</div>
+            <div class="meta"><span>Magic Item</span><span>Common</span></div>
+        </div>
+        <div class="body-text">
+            A red liquid that glimmers when agitated.
+            <div class="stats">Action: Regain 2d4 + 2 HP</div>
+            Single use only. Discard card after use.
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Potion of Healing</div>
+            <div class="meta"><span>Magic Item</span><span>Common</span></div>
+        </div>
+        <div class="body-text">
+            A red liquid that glimmers when agitated.
+            <div class="stats">Action: Regain 2d4 + 2 HP</div>
+            Single use only. Discard card after use.
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Potion of Healing</div>
+            <div class="meta"><span>Magic Item</span><span>Common</span></div>
+        </div>
+        <div class="body-text">
+            A red liquid that glimmers when agitated.
+            <div class="stats">Action: Regain 2d4 + 2 HP</div>
+            Single use only. Discard card after use.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Quiver of Arrows</div>
+            <div class="meta"><span>Ammo</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            A standard quiver holding 20 arrows. Recovering 50% of ammo after battle takes 1 minute.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">SHOTS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Quiver of Arrows</div>
+            <div class="meta"><span>Ammo</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            A standard quiver holding 20 arrows. Recovering 50% of ammo after battle takes 1 minute.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">SHOTS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Case of Bolts</div>
+            <div class="meta"><span>Ammo</span><span>1 lb.</span></div>
+        </div>
+        <div class="body-text">
+            A wooden case holding 20 crossbow bolts. Recovering 50% of ammo after battle takes 1 minute.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">SHOTS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+                <div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div><div class="bubble small"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Healer's Kit</div>
+            <div class="meta"><span>Utility</span><span>3 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Bandages and salves.
+            <br><strong>Action:</strong> Stabilize a dying creature (0 HP) without needing a Medicine check.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">USES REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Healer's Kit</div>
+            <div class="meta"><span>Utility</span><span>3 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Bandages and salves.
+            <br><strong>Action:</strong> Stabilize a dying creature (0 HP) without needing a Medicine check.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">USES REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Antitoxin</div>
+            <div class="meta"><span>Consumable</span><span>-</span></div>
+        </div>
+        <div class="body-text">
+            A vial of murky liquid.
+            <br><strong>Action:</strong> Drink to gain Advantage on saving throws against poison for 1 hour.
+        </div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="sheet">
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Hempen Rope</div>
+            <div class="meta"><span>Gear</span><span>10 lb.</span></div>
+        </div>
+        <div class="body-text">
+            50 feet of rope.
+            <br>Has 2 HP and can be burst with a DC 17 Strength check.
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Hempen Rope</div>
+            <div class="meta"><span>Gear</span><span>10 lb.</span></div>
+        </div>
+        <div class="body-text">
+            50 feet of rope.
+            <br>Has 2 HP and can be burst with a DC 17 Strength check.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Bedroll</div>
+            <div class="meta"><span>Gear</span><span>7 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Prevents exhaustion if used during a Long Rest outdoors. Strap to outside of backpack.
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Bedroll</div>
+            <div class="meta"><span>Gear</span><span>7 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Prevents exhaustion if used during a Long Rest outdoors. Strap to outside of backpack.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Crowbar</div>
+            <div class="meta"><span>Tool</span><span>5 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Using a crowbar grants Advantage to Strength checks where the crowbar's leverage can be applied.
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Crowbar</div>
+            <div class="meta"><span>Tool</span><span>5 lb.</span></div>
+        </div>
+        <div class="body-text">
+            Using a crowbar grants Advantage to Strength checks where the crowbar's leverage can be applied.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Bag of Pitons</div>
+            <div class="meta"><span>Gear</span><span>.25 lb each</span></div>
+        </div>
+        <div class="body-text">
+            Iron spikes to hammer into walls to secure ropes.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">PITONS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="header">
+            <div class="title">Bag of Pitons</div>
+            <div class="meta"><span>Gear</span><span>.25 lb each</span></div>
+        </div>
+        <div class="body-text">
+            Iron spikes to hammer into walls to secure ropes.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">PITONS REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="title">Piece of Chalk</div>
+            <div class="meta"><span>Utility</span><span>-</span></div>
+        </div>
+        <div class="body-text">
+            Mark your path in mazes or dungeons to avoid getting lost.
+        </div>
+        <div class="tracker">
+            <div class="tracker-title">USES REMAINING</div>
+            <div class="bubbles">
+                <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

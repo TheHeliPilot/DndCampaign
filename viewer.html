@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #1a1610;
+            --bg-secondary: #24201a;
+            --bg-elevated: #2e2820;
+            --text: #e8dcc4;
+            --text-muted: #9a8f7c;
+            --border: #3d362a;
+            --accent: #c9a961;
+            --accent-dark: #8b6f3a;
+            --danger: #c94b4b;
+            --warning: #d4a14a;
+            --success: #6fa368;
+            --friendly: #6fa368;
+            --hostile: #c94b4b;
+            --neutral: #9a8f7c;
+            --font-header: 'Cinzel', serif;
+            --font-body: 'Crimson Text', serif;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: var(--spacing-md);
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .campaign-name {
+            font-family: var(--font-header);
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .campaign-meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* File Upload */
+        .file-upload {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent);
+            background: var(--bg-elevated);
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-upload-text {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: var(--spacing-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-family: var(--font-header);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--accent);
+        }
+
+        .nav-btn.active {
+            background: var(--accent-dark);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        /* Search */
+        .search-box {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Content Sections */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Entity Cards */
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .entity-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .entity-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .entity-name {
+            font-family: var(--font-header);
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .entity-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .entity-description {
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-sm);
+        }
+
+        .tag {
+            padding: 2px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .tag-friendly { border-color: var(--friendly); color: var(--friendly); }
+        .tag-hostile { border-color: var(--hostile); color: var(--hostile); }
+        .tag-neutral { border-color: var(--neutral); color: var(--neutral); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: var(--spacing-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .detail-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .detail-section h3 {
+            font-family: var(--font-header);
+            color: var(--accent);
+            margin-bottom: var(--spacing-sm);
+            font-size: 1.2rem;
+        }
+
+        .detail-section p,
+        .detail-section div {
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        .dm-only {
+            background: rgba(201, 75, 75, 0.1);
+            border-left: 3px solid var(--danger);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .dm-only h3 {
+            color: var(--danger);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .stat-item {
+            background: var(--bg-secondary);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .stat-value {
+            font-family: var(--font-header);
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objective-item {
+            padding: var(--spacing-sm);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .objective-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .objective-checkbox {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-muted);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .campaign-name {
+                font-size: 1.5rem;
+            }
+
+            .entity-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                min-width: 100%;
+            }
+
+            .modal {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="campaign-name" id="campaignName">Campaign Viewer</h1>
+            <div class="campaign-meta" id="campaignMeta">Load a save file to begin</div>
+        </div>
+
+        <div class="file-upload" id="fileUpload">
+            <input type="file" id="fileInput" accept=".json">
+            <div class="file-upload-text">📁 Click to load save file</div>
+        </div>
+
+        <div id="content" style="display: none;">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search all entities...">
+
+            <div class="nav">
+                <button class="nav-btn active" data-section="npcs">NPCs</button>
+                <button class="nav-btn" data-section="locations">Locations</button>
+                <button class="nav-btn" data-section="shops">Shops</button>
+                <button class="nav-btn" data-section="quests">Quests</button>
+                <button class="nav-btn" data-section="items">Items</button>
+                <button class="nav-btn" data-section="lore">Lore</button>
+                <button class="nav-btn" data-section="factions">Factions</button>
+                <button class="nav-btn" data-section="pcs">PCs</button>
+            </div>
+
+            <div id="npcs" class="section active"></div>
+            <div id="locations" class="section"></div>
+            <div id="shops" class="section"></div>
+            <div id="quests" class="section"></div>
+            <div id="items" class="section"></div>
+            <div id="lore" class="section"></div>
+            <div id="factions" class="section"></div>
+            <div id="pcs" class="section"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let campaignData = null;
+
+        // File Upload
+        document.getElementById('fileUpload').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        campaignData = JSON.parse(event.target.result);
+                        initializeViewer();
+                    } catch (error) {
+                        alert('Error loading file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function initializeViewer() {
+            document.getElementById('content').style.display = 'block';
+            document.getElementById('fileUpload').style.display = 'none';
+
+            document.getElementById('campaignName').textContent = campaignData.meta.campaignName;
+            document.getElementById('campaignMeta').textContent = `Version: ${campaignData.meta.version || 'Unknown'}`;
+
+            renderSection('npcs');
+            setupNavigation();
+            setupSearch();
+            setupModal();
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const section = btn.dataset.section;
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    document.getElementById(section).classList.add('active');
+                    renderSection(section);
+                });
+            });
+        }
+
+        function setupSearch() {
+            const searchBox = document.getElementById('searchBox');
+            searchBox.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const activeSection = document.querySelector('.section.active');
+                const cards = activeSection.querySelectorAll('.entity-card');
+
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+        }
+
+        function setupModal() {
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('modalOverlay').addEventListener('click', (e) => {
+                if (e.target.id === 'modalOverlay') closeModal();
+            });
+        }
+
+        function openModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderSection(section) {
+            const container = document.getElementById(section);
+            const entities = campaignData[section] || [];
+
+            if (entities.length === 0) {
+                container.innerHTML = '<div class="empty-state">No ' + section + ' found</div>';
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'entity-grid';
+
+            entities.forEach(entity => {
+                const card = createEntityCard(section, entity);
+                grid.appendChild(card);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        function createEntityCard(type, entity) {
+            const card = document.createElement('div');
+            card.className = 'entity-card';
+
+            let subtitle = '';
+            let description = '';
+            let tags = '';
+
+            switch(type) {
+                case 'npcs':
+                    subtitle = [entity.title, entity.race].filter(Boolean).join(' • ');
+                    description = entity.description || '';
+                    if (entity.disposition) {
+                        tags = `<span class="tag tag-${entity.disposition}">${entity.disposition}</span>`;
+                    }
+                    break;
+                case 'locations':
+                    subtitle = entity.type || '';
+                    if (entity.population) subtitle += ` • Pop: ${entity.population}`;
+                    description = entity.description || '';
+                    break;
+                case 'shops':
+                    subtitle = entity.type || '';
+                    description = entity.description || '';
+                    break;
+                case 'quests':
+                    subtitle = entity.type || '';
+                    description = entity.description || '';
+                    tags = `<span class="tag tag-neutral">${entity.status}</span>`;
+                    break;
+                case 'items':
+                    subtitle = entity.type || '';
+                    description = entity.description || '';
+                    if (entity.rarity) {
+                        tags = `<span class="tag tag-neutral">${entity.rarity}</span>`;
+                    }
+                    break;
+                case 'lore':
+                    subtitle = entity.category || '';
+                    description = entity.content || '';
+                    break;
+                case 'pcs':
+                    subtitle = [entity.class, entity.race].filter(Boolean).join(' • ');
+                    if (entity.level) subtitle += ` • Level ${entity.level}`;
+                    description = entity.concept || entity.summary || '';
+                    if (entity.status) {
+                        tags = `<span class="tag tag-neutral">${entity.status}</span>`;
+                    }
+                    break;
+                case 'factions':
+                    subtitle = entity.headquarters || '';
+                    if (entity.leader) {
+                        subtitle += (subtitle ? ' • ' : '') + 'Leader: ' + entity.leader;
+                    }
+                    description = entity.description;
+                    const rep = entity.currentReputation || entity.reputationTrack?.current || 0;
+                    const repColor = rep >= 10 ? 'tag-friendly' : rep >= 5 ? 'tag-neutral' : rep < 0 ? 'tag-hostile' : 'tag-neutral';
+                    tags = `<span class="tag ${repColor}">Rep: ${rep >= 0 ? '+' : ''}${rep}</span>`;
+                    break;
+            }
+
+            card.innerHTML = `
+                <div class="entity-name">${escapeHtml(entity.name || entity.title)}</div>
+                ${subtitle ? `<div class="entity-subtitle">${escapeHtml(subtitle)}</div>` : ''}
+                ${description ? `<div class="entity-description">${escapeHtml(description)}</div>` : ''}
+                ${tags ? `<div class="tags">${tags}</div>` : ''}
+            `;
+
+            card.addEventListener('click', () => {
+                showEntityDetails(type, entity);
+            });
+
+            return card;
+        }
+
+        function showEntityDetails(type, entity) {
+            let content = '';
+
+            switch(type) {
+                case 'npcs':
+                    content = renderNpcDetails(entity);
+                    break;
+                case 'locations':
+                    content = renderLocationDetails(entity);
+                    break;
+                case 'shops':
+                    content = renderShopDetails(entity);
+                    break;
+                case 'quests':
+                    content = renderQuestDetails(entity);
+                    break;
+                case 'items':
+                    content = renderItemDetails(entity);
+                    break;
+                case 'lore':
+                    content = renderLoreDetails(entity);
+                    break;
+                case 'pcs':
+                    content = renderPcDetails(entity);
+                    break;
+                case 'factions':
+                    content = renderFactionDetails(entity);
+                    break;
+            }
+
+            openModal(entity.name || entity.title, content);
+        }
+
+        function renderNpcDetails(npc) {
+            let html = '';
+
+            if (npc.race || npc.class || npc.occupation) {
+                html += `<div class="detail-section">`;
+                html += `<div class="stat-grid">`;
+                if (npc.race) html += `<div class="stat-item"><div class="stat-label">Race</div><div class="stat-value">${escapeHtml(npc.race)}</div></div>`;
+                if (npc.class) html += `<div class="stat-item"><div class="stat-label">Class</div><div class="stat-value">${escapeHtml(npc.class)}</div></div>`;
+                if (npc.occupation) html += `<div class="stat-item"><div class="stat-label">Occupation</div><div class="stat-value">${escapeHtml(npc.occupation)}</div></div>`;
+                if (npc.disposition) html += `<div class="stat-item"><div class="stat-label">Disposition</div><div class="stat-value">${escapeHtml(npc.disposition)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (npc.description) html += `<div class="detail-section"><h3>Description</h3><p>${escapeHtml(npc.description)}</p></div>`;
+            if (npc.personality) html += `<div class="detail-section"><h3>Personality</h3><p>${escapeHtml(npc.personality)}</p></div>`;
+            if (npc.voice) html += `<div class="detail-section"><h3>Voice/Mannerisms</h3><p>${escapeHtml(npc.voice)}</p></div>`;
+            if (npc.allegiances) html += `<div class="detail-section"><h3>Allegiances</h3><p>${escapeHtml(npc.allegiances)}</p></div>`;
+
+            if (npc.ac || npc.hp || npc.abilities) {
+                html += `<div class="detail-section"><h3>Stats</h3><div class="stat-grid">`;
+                if (npc.ac) html += `<div class="stat-item"><div class="stat-label">AC</div><div class="stat-value">${npc.ac}</div></div>`;
+                if (npc.hp) html += `<div class="stat-item"><div class="stat-label">HP</div><div class="stat-value">${npc.hp}</div></div>`;
+                if (npc.abilities) html += `<div class="stat-item" style="grid-column: span 2;"><div class="stat-label">Abilities</div><div class="stat-value" style="font-size:0.9rem;">${escapeHtml(npc.abilities)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (npc.tags && npc.tags.length > 0) {
+                html += `<div class="detail-section"><h3>Tags</h3><div class="tags">`;
+                npc.tags.forEach(tag => {
+                    html += `<span class="tag tag-neutral">${escapeHtml(tag)}</span>`;
+                });
+                html += `</div></div>`;
+            }
+
+            if (npc.dialogueExamples && npc.dialogueExamples.length > 0) {
+                html += `<div class="detail-section"><h3>Example Dialogue</h3>`;
+                npc.dialogueExamples.forEach(dialogue => {
+                    html += `<p style="margin-bottom: var(--spacing-sm); font-style: italic;">"${escapeHtml(dialogue)}"</p>`;
+                });
+                html += `</div>`;
+            }
+
+            if (npc.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(npc.notes)}</p></div>`;
+
+            // DM Only sections
+            let dmContent = '';
+            if (npc.background) dmContent += `<div class="detail-section"><h3>Background</h3><p>${escapeHtml(npc.background)}</p></div>`;
+            if (npc.roleplayGuide) dmContent += `<div class="detail-section"><h3>Roleplay Guide</h3><p>${escapeHtml(npc.roleplayGuide)}</p></div>`;
+            if (npc.secrets) dmContent += `<div class="detail-section"><h3>Secrets</h3><p>${escapeHtml(npc.secrets)}</p></div>`;
+            if (npc.consequences) dmContent += `<div class="detail-section"><h3>Consequences</h3><p>${escapeHtml(npc.consequences)}</p></div>`;
+
+            if (dmContent) {
+                html += `<div class="dm-only"><h3>🔒 DM Only</h3>${dmContent}</div>`;
+            }
+
+            return html;
+        }
+
+        function renderLocationDetails(loc) {
+            let html = '';
+
+            if (loc.type) {
+                html += `<div class="detail-section">`;
+                html += `<div class="stat-grid">`;
+                html += `<div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">${escapeHtml(loc.type)}</div></div>`;
+                if (loc.region) html += `<div class="stat-item"><div class="stat-label">Region</div><div class="stat-value">${escapeHtml(loc.region)}</div></div>`;
+                if (loc.population) html += `<div class="stat-item"><div class="stat-label">Population</div><div class="stat-value">${escapeHtml(loc.population)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (loc.description) html += `<div class="detail-section"><h3>Description</h3><p>${escapeHtml(loc.description)}</p></div>`;
+            if (loc.history) html += `<div class="detail-section"><h3>History</h3><p>${escapeHtml(loc.history)}</p></div>`;
+            if (loc.features) html += `<div class="detail-section"><h3>Notable Features</h3><p>${escapeHtml(loc.features)}</p></div>`;
+            if (loc.pointsOfInterest) html += `<div class="detail-section"><h3>Points of Interest</h3><p>${escapeHtml(loc.pointsOfInterest)}</p></div>`;
+            if (loc.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(loc.notes)}</p></div>`;
+
+            if (loc.secrets) {
+                html += `<div class="dm-only"><h3>🔒 Secrets (DM Only)</h3><div class="detail-section"><p>${escapeHtml(loc.secrets)}</p></div></div>`;
+            }
+
+            return html;
+        }
+
+        function renderShopDetails(shop) {
+            let html = '';
+
+            if (shop.type) html += `<div class="detail-section"><div class="stat-grid"><div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">${escapeHtml(shop.type)}</div></div></div></div>`;
+            if (shop.description) html += `<div class="detail-section"><h3>Description</h3><p>${escapeHtml(shop.description)}</p></div>`;
+            if (shop.specialties) html += `<div class="detail-section"><h3>Specialties</h3><p>${escapeHtml(shop.specialties)}</p></div>`;
+            if (shop.inventory) html += `<div class="detail-section"><h3>Inventory/Services</h3><p>${escapeHtml(shop.inventory)}</p></div>`;
+
+            if (shop.priceModifier || shop.hours) {
+                html += `<div class="detail-section"><h3>Details</h3>`;
+                if (shop.priceModifier) html += `<p><strong>Prices:</strong> ${shop.priceModifier}% of normal</p>`;
+                if (shop.hours) html += `<p><strong>Hours:</strong> ${escapeHtml(shop.hours)}</p>`;
+                html += `</div>`;
+            }
+
+            if (shop.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(shop.notes)}</p></div>`;
+
+            if (shop.roleplayGuide) {
+                html += `<div class="dm-only"><h3>🔒 Roleplay Guide (DM Only)</h3><div class="detail-section"><p>${escapeHtml(shop.roleplayGuide)}</p></div></div>`;
+            }
+
+            return html;
+        }
+
+        function renderQuestDetails(quest) {
+            let html = '';
+
+            if (quest.type || quest.status) {
+                html += `<div class="detail-section"><div class="stat-grid">`;
+                if (quest.type) html += `<div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">${escapeHtml(quest.type)}</div></div>`;
+                if (quest.status) html += `<div class="stat-item"><div class="stat-label">Status</div><div class="stat-value">${escapeHtml(quest.status)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (quest.description) html += `<div class="detail-section"><h3>Description</h3><p>${escapeHtml(quest.description)}</p></div>`;
+
+            if (quest.objectives && quest.objectives.length > 0) {
+                html += `<div class="detail-section"><h3>Objectives</h3><ul class="objectives-list">`;
+                quest.objectives.forEach(obj => {
+                    html += `<li class="objective-item ${obj.completed ? 'completed' : ''}">
+                        <input type="checkbox" class="objective-checkbox" ${obj.completed ? 'checked' : ''} disabled>
+                        <span>${escapeHtml(obj.text)}</span>
+                    </li>`;
+                });
+                html += `</ul></div>`;
+            }
+
+            if (quest.rewards) {
+                html += `<div class="detail-section"><h3>Rewards</h3>`;
+                if (typeof quest.rewards === 'object' && !Array.isArray(quest.rewards)) {
+                    html += `<div class="stat-grid">`;
+                    Object.entries(quest.rewards).forEach(([key, value]) => {
+                        if (value) html += `<div class="stat-item"><div class="stat-label">${escapeHtml(key)}</div><div class="stat-value">${escapeHtml(String(value))}</div></div>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<p>${escapeHtml(String(quest.rewards))}</p>`;
+                }
+                html += `</div>`;
+            }
+
+            if (quest.tags && quest.tags.length > 0) {
+                html += `<div class="detail-section"><h3>Tags</h3><div class="tags">`;
+                quest.tags.forEach(tag => {
+                    html += `<span class="tag tag-neutral">${escapeHtml(tag)}</span>`;
+                });
+                html += `</div></div>`;
+            }
+
+            if (quest.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(quest.notes)}</p></div>`;
+
+            // DM Only sections
+            let dmContent = '';
+            if (quest.background) dmContent += `<div class="detail-section"><h3>Background</h3><p>${escapeHtml(quest.background)}</p></div>`;
+            if (quest.dmGuide) dmContent += `<div class="detail-section"><h3>DM Guide</h3><p>${escapeHtml(quest.dmGuide)}</p></div>`;
+            if (quest.runGuide) dmContent += `<div class="detail-section"><h3>Run Guide</h3><p>${escapeHtml(quest.runGuide)}</p></div>`;
+
+            if (quest.boxedText && typeof quest.boxedText === 'object') {
+                dmContent += `<div class="detail-section"><h3>Boxed Text (Read-Aloud)</h3>`;
+                Object.entries(quest.boxedText).forEach(([key, text]) => {
+                    dmContent += `<div style="margin-bottom: var(--spacing-md);"><h4 style="color: var(--accent); margin-bottom: var(--spacing-xs);">${escapeHtml(key.replace(/([A-Z])/g, ' $1').trim())}</h4><div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--radius-sm); font-style: italic;">${escapeHtml(text)}</div></div>`;
+                });
+                dmContent += `</div>`;
+            }
+
+            if (quest.complications) dmContent += `<div class="detail-section"><h3>Complications</h3><p>${escapeHtml(quest.complications)}</p></div>`;
+            if (quest.consequences) dmContent += `<div class="detail-section"><h3>Consequences</h3><p>${escapeHtml(quest.consequences)}</p></div>`;
+            if (quest.secrets) dmContent += `<div class="detail-section"><h3>Secrets</h3><p>${escapeHtml(quest.secrets)}</p></div>`;
+
+            if (dmContent) {
+                html += `<div class="dm-only"><h3>🔒 DM Only</h3>${dmContent}</div>`;
+            }
+
+            return html;
+        }
+
+        function renderItemDetails(item) {
+            let html = '';
+
+            if (item.type || item.rarity) {
+                html += `<div class="detail-section"><div class="stat-grid">`;
+                if (item.type) html += `<div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">${escapeHtml(item.type)}</div></div>`;
+                if (item.rarity) html += `<div class="stat-item"><div class="stat-label">Rarity</div><div class="stat-value">${escapeHtml(item.rarity)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (item.description) html += `<div class="detail-section"><h3>Description</h3><p>${escapeHtml(item.description)}</p></div>`;
+            if (item.effects) html += `<div class="detail-section"><h3>Effects</h3><p>${escapeHtml(item.effects)}</p></div>`;
+
+            html += `<div class="detail-section"><h3>Properties</h3><div class="stat-grid">`;
+            if (item.value) html += `<div class="stat-item"><div class="stat-label">Value</div><div class="stat-value">${item.value} gp</div></div>`;
+            if (item.weight) html += `<div class="stat-item"><div class="stat-label">Weight</div><div class="stat-value">${item.weight} lb</div></div>`;
+            html += `<div class="stat-item"><div class="stat-label">Attunement</div><div class="stat-value">${item.attunement ? 'Yes' : 'No'}</div></div>`;
+            html += `</div></div>`;
+
+            if (item.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(item.notes)}</p></div>`;
+
+            return html;
+        }
+
+        function renderLoreDetails(lore) {
+            let html = '';
+
+            if (lore.category) {
+                html += `<div class="detail-section"><div class="stat-grid">`;
+                html += `<div class="stat-item"><div class="stat-label">Category</div><div class="stat-value">${escapeHtml(lore.category)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (lore.content) html += `<div class="detail-section"><p>${escapeHtml(lore.content)}</p></div>`;
+            if (lore.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(lore.notes)}</p></div>`;
+
+            return html;
+        }
+
+        function renderPcDetails(pc) {
+            let html = '';
+
+            if (pc.concept) {
+                html += `<div class="detail-section"><p style="font-style: italic; color: var(--accent);">"${escapeHtml(pc.concept)}"</p></div>`;
+            }
+
+            html += `<div class="detail-section"><div class="stat-grid">`;
+            if (pc.race) html += `<div class="stat-item"><div class="stat-label">Race</div><div class="stat-value">${escapeHtml(pc.race)}</div></div>`;
+            if (pc.class) html += `<div class="stat-item"><div class="stat-label">Class</div><div class="stat-value">${escapeHtml(pc.class)}${pc.subclass ? ` (${pc.subclass})` : ''}</div></div>`;
+            if (pc.level) html += `<div class="stat-item"><div class="stat-label">Level</div><div class="stat-value">${pc.level}</div></div>`;
+            if (pc.background) html += `<div class="stat-item"><div class="stat-label">Background</div><div class="stat-value">${escapeHtml(pc.background)}</div></div>`;
+            if (pc.playerName) html += `<div class="stat-item"><div class="stat-label">Player</div><div class="stat-value">${escapeHtml(pc.playerName)}</div></div>`;
+            if (pc.status) html += `<div class="stat-item"><div class="stat-label">Status</div><div class="stat-value">${escapeHtml(pc.status)}</div></div>`;
+            html += `</div></div>`;
+
+            if (pc.summary) html += `<div class="detail-section"><h3>Summary</h3><p>${escapeHtml(pc.summary)}</p></div>`;
+            if (pc.backstory) html += `<div class="detail-section"><h3>Backstory</h3><p>${escapeHtml(pc.backstory)}</p></div>`;
+
+            if (pc.personalQuestName) {
+                html += `<div class="detail-section" style="background: rgba(139, 107, 58, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); border-left: 3px solid var(--warning);">`;
+                html += `<h3>Personal Quest: ${escapeHtml(pc.personalQuestName)}</h3>`;
+                if (pc.personalQuestDescription) html += `<p style="margin-top: var(--spacing-sm);">${escapeHtml(pc.personalQuestDescription)}</p>`;
+                if (pc.personalQuestObjectives) {
+                    html += `<div style="margin-top: var(--spacing-sm);"><strong>Objectives:</strong><ul style="margin-top: var(--spacing-xs); margin-left: var(--spacing-md);">`;
+                    pc.personalQuestObjectives.split('\n').filter(o => o.trim()).forEach(obj => {
+                        html += `<li>${escapeHtml(obj.trim())}</li>`;
+                    });
+                    html += `</ul></div>`;
+                }
+                html += `</div>`;
+            }
+
+            if (pc.playerChoices) html += `<div class="detail-section"><h3>Player Choices</h3><p>${escapeHtml(pc.playerChoices)}</p></div>`;
+            if (pc.statBlock) html += `<div class="detail-section"><h3>Stats</h3><p>${escapeHtml(pc.statBlock)}</p></div>`;
+            if (pc.features) html += `<div class="detail-section"><h3>Class Features</h3><p>${escapeHtml(pc.features)}</p></div>`;
+            if (pc.proficiencies) html += `<div class="detail-section"><h3>Proficiencies</h3><p>${escapeHtml(pc.proficiencies)}</p></div>`;
+            if (pc.startingEquipment) html += `<div class="detail-section"><h3>Starting Equipment</h3><p>${escapeHtml(pc.startingEquipment)}</p></div>`;
+            if (pc.roleplayNotes) html += `<div class="detail-section"><h3>Roleplay Notes</h3><p>${escapeHtml(pc.roleplayNotes)}</p></div>`;
+
+            if (pc.sessionNotes) {
+                html += `<div class="dm-only"><h3>🔒 Session Notes</h3><div class="detail-section"><p>${escapeHtml(pc.sessionNotes)}</p></div></div>`;
+            }
+
+            return html;
+        }
+
+        function renderFactionDetails(faction) {
+            let html = '';
+
+            if (faction.headquarters || faction.leader) {
+                html += `<div class="detail-section"><div class="stat-grid">`;
+                if (faction.headquarters) html += `<div class="stat-item"><div class="stat-label">Headquarters</div><div class="stat-value">${escapeHtml(faction.headquarters)}</div></div>`;
+                if (faction.leader) html += `<div class="stat-item"><div class="stat-label">Leader</div><div class="stat-value">${escapeHtml(faction.leader)}</div></div>`;
+                html += `</div></div>`;
+            }
+
+            if (faction.description) html += `<div class="detail-section"><h3>Description</h3><p>${escapeHtml(faction.description)}</p></div>`;
+
+            // Reputation tracker
+            const currentRep = faction.currentReputation ?? faction.reputationTrack?.current ?? 0;
+            const repTrack = faction.reputationTrack;
+
+            if (repTrack && repTrack.levels) {
+                html += `<div class="detail-section" style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--radius-md);">`;
+                html += `<h3>Party Reputation: ${currentRep >= 0 ? '+' : ''}${currentRep}</h3>`;
+
+                // Find current rank
+                let currentRank = 'Unknown';
+                Object.entries(repTrack.levels).forEach(([range, data]) => {
+                    const match = range.match(/(-?\d+)\s+to\s+(-?\d+|\+)/);
+                    if (match) {
+                        const min = parseInt(match[1]);
+                        const max = match[2] === '+' ? 999 : parseInt(match[2]);
+                        if (currentRep >= min && currentRep <= max) {
+                            currentRank = data.rank;
+                        }
+                    }
+                });
+
+                html += `<p style="font-size: 1.1rem; margin-top: var(--spacing-sm);"><strong>Current Rank:</strong> ${escapeHtml(currentRank)}</p>`;
+                html += `<div style="margin-top: var(--spacing-lg);">`;
+
+                Object.entries(repTrack.levels).forEach(([range, data]) => {
+                    const match = range.match(/(-?\d+)\s+to\s+(-?\d+|\+)/);
+                    const isActive = match && currentRep >= parseInt(match[1]) && (match[2] === '+' || currentRep <= parseInt(match[2]));
+
+                    html += `<div style="padding: var(--spacing-sm); margin-bottom: var(--spacing-sm); background: ${isActive ? 'var(--bg-elevated)' : 'transparent'}; border-left: 3px solid ${isActive ? 'var(--accent)' : 'var(--border)'}; border-radius: var(--radius-sm);">`;
+                    html += `<div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xs);"><span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHtml(range)}</span><strong style="color: ${isActive ? 'var(--accent)' : 'var(--text)'};">${escapeHtml(data.rank)}</strong></div>`;
+                    html += `<div style="font-size: 0.9rem;">${escapeHtml(data.effects)}</div>`;
+                    if (data.access) html += `<div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-top: var(--spacing-xs);"><strong>Access:</strong> ${escapeHtml(data.access)}</div>`;
+                    html += `</div>`;
+                });
+
+                html += `</div></div>`;
+            }
+
+            if (faction.goals) html += `<div class="detail-section"><h3>Goals</h3><p>${escapeHtml(faction.goals)}</p></div>`;
+            if (faction.allies) html += `<div class="detail-section"><h3>Allies</h3><p>${escapeHtml(faction.allies)}</p></div>`;
+            if (faction.enemies) html += `<div class="detail-section"><h3>Enemies</h3><p>${escapeHtml(faction.enemies)}</p></div>`;
+            if (faction.resources) html += `<div class="detail-section"><h3>Resources</h3><p>${escapeHtml(faction.resources)}</p></div>`;
+            if (faction.loreReference) html += `<div class="detail-section"><h3>Lore Reference</h3><p>${escapeHtml(faction.loreReference)}</p></div>`;
+            if (faction.notes) html += `<div class="detail-section"><h3>Notes</h3><p>${escapeHtml(faction.notes)}</p></div>`;
+
+            if (faction.secrets) {
+                html += `<div class="dm-only"><h3>🔒 Secrets (DM Only)</h3><div class="detail-section"><p>${escapeHtml(faction.secrets)}</p></div></div>`;
+            }
+
+            return html;
+        }
+    </script>
+</body>
+</html>

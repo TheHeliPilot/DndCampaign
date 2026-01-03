@@ -4,9 +4,31 @@ const fs = require('fs');
 
 let mainWindow;
 let saveFolderPath = null;
+let localSaveFolder = null;
 
-// Use local Saves folder next to the app
-const localSaveFolder = path.join(__dirname, 'Saves');
+// Get the directory where the app executable is located
+const getAppDirectory = () => {
+    if (app.isPackaged) {
+        // Check for portable.txt to indicate portable mode
+        // Electron-builder portable creates this file
+        const exePath = process.execPath;
+        const exeDir = path.dirname(exePath);
+        const portableFile = path.join(exeDir, 'portable.txt');
+
+        console.log('Packaged app - exe path:', exePath);
+        console.log('Checking for portable file:', portableFile);
+        console.log('Portable file exists:', fs.existsSync(portableFile));
+
+        // Always use exe directory for portable builds
+        // This works for both extracted portable exe and regular installs
+        console.log('Using directory:', exeDir);
+        return exeDir;
+    } else {
+        // In development, use __dirname
+        console.log('Development mode - using __dirname:', __dirname);
+        return __dirname;
+    }
+};
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -31,6 +53,13 @@ function createWindow() {
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
         mainWindow.maximize();
+
+        // Log save folder path for debugging
+        const saveFolder = ensureSaveFolder();
+        console.log('=== DM Screen Started ===');
+        console.log('Save folder location:', saveFolder);
+        console.log('Is packaged:', app.isPackaged);
+        console.log('========================');
     });
 
     // Remove menu bar
@@ -39,11 +68,18 @@ function createWindow() {
 
 // Ensure save folder exists
 function ensureSaveFolder() {
+    if (!localSaveFolder) {
+        localSaveFolder = path.join(getAppDirectory(), 'Saves');
+        console.log('Initialized save folder path:', localSaveFolder);
+    }
     if (!saveFolderPath) {
         saveFolderPath = localSaveFolder;
     }
     if (!fs.existsSync(saveFolderPath)) {
+        console.log('Creating save folder:', saveFolderPath);
         fs.mkdirSync(saveFolderPath, { recursive: true });
+    } else {
+        console.log('Save folder exists:', saveFolderPath);
     }
     return saveFolderPath;
 }

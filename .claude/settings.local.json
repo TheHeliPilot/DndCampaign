@@ -5,7 +5,14 @@
       "Bash(npm install:*)",
       "Bash(npm start)",
       "Bash(ls -la \"C:\\Users\\bucka\\Desktop\\DndCampaign\\icons\"\" 2>/dev/null || dir \"C:UsersbuckaDesktopDndCampaignicons \")",
-      "Bash(dir \"C:\\Users\\bucka\\Desktop\\DndCampaign\\icons\" /b /ad)"
+      "Bash(dir \"C:\\Users\\bucka\\Desktop\\DndCampaign\\icons\" /b /ad)",
+      "Bash(Get-Content \"C:\\Users\\bucka\\Desktop\\DndCampaign\\Saves\\the_eternal_light_save.json\")",
+      "Bash(Select-Object -First 1)",
+      "Bash(paste:*)",
+      "Bash(dir:*)",
+      "Bash(npm run build:win:*)",
+      "Bash(ls:*)",
+      "Bash(npx asar:*)"
     ]
   }
 }

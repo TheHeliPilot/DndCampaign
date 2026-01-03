@@ -5,12 +5,68 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --enable-logging"
+    "dev": "electron . --enable-logging",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:dir": "electron-builder --dir"
   },
-  "keywords": ["dnd", "dungeon-master", "campaign", "rpg"],
+  "keywords": [
+    "dnd",
+    "dungeon-master",
+    "campaign",
+    "rpg"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^39.2.7"
+    "electron": "^39.2.7",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.dmscreen.campaignmanager",
+    "productName": "DM Screen",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "character-sheet.html",
+      "quest-visualizer.html",
+      "item-cards.html",
+      "js/**/*",
+      "css/**/*",
+      "icons/**/*",
+      "Saves/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "icons/ZuesLogoNoBG.png",
+      "signAndEditExecutable": false,
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DM Screen"
+    },
+    "portable": {
+      "artifactName": "DM-Screen-Portable.exe",
+      "requestExecutionLevel": "user",
+      "useZip": false
+    }
   }
 }

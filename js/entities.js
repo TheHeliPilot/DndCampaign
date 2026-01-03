@@ -27,7 +27,9 @@ const Entities = {
                 { name: 'portrait', label: 'Portrait URL', type: 'url' },
                 { name: 'locationIds', label: 'Locations', type: 'links', linkType: 'locations' },
                 { name: 'questIds', label: 'Related Quests', type: 'links', linkType: 'quests' },
-                { name: 'notes', label: 'Notes', type: 'textarea' }
+                { name: 'notes', label: 'Notes', type: 'textarea' },
+                { name: 'tags', label: 'Tags', type: 'textarea', placeholder: 'One tag per line or comma-separated' },
+                { name: 'dialogueExamples', label: 'Example Dialogue', type: 'textarea', rows: 4, placeholder: 'One example per line' }
             ]
         },
         locations: {
@@ -36,9 +38,12 @@ const Entities = {
                 { name: 'name', label: 'Name', type: 'text', required: true },
                 { name: 'type', label: 'Type', type: 'select', options: ['Capital City', 'City', 'Town', 'Village', 'Hamlet', 'Settlement', 'Outpost', 'Fort', 'Ruins', 'Dungeon', 'Landmark', 'Wilderness Area', 'Other'] },
                 { name: 'parentLocationId', label: 'Parent Location/Region', type: 'link', linkType: 'locations' },
+                { name: 'region', label: 'Region', type: 'text', placeholder: 'e.g., Central Lowlands, Northern Mountains' },
                 { name: 'population', label: 'Population', type: 'text' },
                 { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Atmosphere, key features, what makes this place unique?' },
+                { name: 'history', label: 'History', type: 'textarea', placeholder: 'Historical background and lore' },
                 { name: 'features', label: 'Notable Features', type: 'textarea', placeholder: 'One feature per line' },
+                { name: 'pointsOfInterest', label: 'Points of Interest', type: 'textarea', placeholder: 'Specific locations within this area' },
                 { name: 'secrets', label: 'Secrets (DM Only)', type: 'textarea', secret: true },
                 { name: 'npcIds', label: 'NPCs Here', type: 'links', linkType: 'npcs' },
                 { name: 'shopIds', label: 'Shops/Establishments', type: 'links', linkType: 'shops' },
@@ -55,9 +60,11 @@ const Entities = {
                 { name: 'ownerId', label: 'Owner/Proprietor', type: 'link', linkType: 'npcs' },
                 { name: 'staffIds', label: 'Staff', type: 'links', linkType: 'npcs' },
                 { name: 'description', label: 'Description/Atmosphere', type: 'textarea' },
+                { name: 'specialties', label: 'Specialties', type: 'textarea', placeholder: 'What makes this place special or unique' },
                 { name: 'inventory', label: 'Inventory/Services', type: 'textarea', placeholder: 'List items or services offered' },
                 { name: 'priceModifier', label: 'Price Modifier (%)', type: 'number', placeholder: '100 = normal prices' },
                 { name: 'hours', label: 'Operating Hours', type: 'text', placeholder: 'e.g., Dawn to Dusk' },
+                { name: 'roleplayGuide', label: 'Roleplay Guide (DM Only)', type: 'textarea', secret: true, rows: 6, placeholder: 'How to roleplay this establishment' },
                 { name: 'questIds', label: 'Related Quests', type: 'links', linkType: 'quests' },
                 { name: 'notes', label: 'Notes', type: 'textarea' }
             ]
@@ -75,8 +82,11 @@ const Entities = {
                 { name: 'rewards', label: 'Rewards', type: 'textarea' },
                 { name: 'complications', label: 'Complications', type: 'textarea', secret: true },
                 { name: 'consequences', label: 'Consequences', type: 'textarea', secret: true },
+                { name: 'dmGuide', label: 'DM Guide', type: 'textarea', secret: true, rows: 8 },
                 { name: 'runGuide', label: 'Run Guide (DM Notes)', type: 'textarea', secret: true, rows: 10 },
+                { name: 'boxedText', label: 'Boxed Text (JSON format)', type: 'textarea', secret: true, rows: 6, placeholder: '{"introduction": "Read-aloud text here", "conclusion": "More text"}' },
                 { name: 'secrets', label: 'Secrets', type: 'textarea', secret: true },
+                { name: 'tags', label: 'Tags', type: 'textarea', placeholder: 'One tag per line or comma-separated' },
                 { name: 'prerequisiteIds', label: 'Prerequisites', type: 'links', linkType: 'quests' },
                 { name: 'npcIds', label: 'Related NPCs', type: 'links', linkType: 'npcs' },
                 { name: 'locationIds', label: 'Related Locations', type: 'links', linkType: 'locations' },
@@ -139,6 +149,26 @@ const Entities = {
                 { name: 'portrait', label: 'Portrait URL', type: 'url' },
                 { name: 'sessionNotes', label: 'Session Notes', type: 'textarea', rows: 6 }
             ]
+        },
+        factions: {
+            title: 'Faction',
+            fields: [
+                { name: 'name', label: 'Name', type: 'text', required: true },
+                { name: 'description', label: 'Description', type: 'textarea', rows: 4, placeholder: 'What this faction is about' },
+                { name: 'headquarters', label: 'Headquarters', type: 'text', placeholder: 'Where they are based' },
+                { name: 'leader', label: 'Leader', type: 'text', placeholder: 'Who leads this faction' },
+                { name: 'goals', label: 'Goals', type: 'textarea', placeholder: 'What they want to accomplish' },
+                { name: 'allies', label: 'Allies', type: 'textarea', placeholder: 'Other factions or groups they work with' },
+                { name: 'enemies', label: 'Enemies', type: 'textarea', placeholder: 'Who opposes them' },
+                { name: 'resources', label: 'Resources', type: 'textarea', placeholder: 'What they have access to' },
+                { name: 'secrets', label: 'Secrets (DM Only)', type: 'textarea', secret: true },
+                { name: 'currentReputation', label: 'Current Party Reputation', type: 'number', placeholder: '0' },
+                { name: 'keyNpcIds', label: 'Key NPCs', type: 'links', linkType: 'npcs' },
+                { name: 'locationIds', label: 'Related Locations', type: 'links', linkType: 'locations' },
+                { name: 'questIds', label: 'Related Quests', type: 'links', linkType: 'quests' },
+                { name: 'loreReference', label: 'Lore Reference', type: 'textarea', placeholder: 'References to lore entries' },
+                { name: 'notes', label: 'Notes', type: 'textarea' }
+            ]
         }
     },
 
@@ -157,6 +187,7 @@ const Entities = {
         document.getElementById('addItemBtn')?.addEventListener('click', () => this.openEntityForm('items'));
         document.getElementById('addLoreBtn')?.addEventListener('click', () => this.openEntityForm('lore'));
         document.getElementById('addPcBtn')?.addEventListener('click', () => this.openEntityForm('pcs'));
+        document.getElementById('addFactionBtn')?.addEventListener('click', () => this.openEntityForm('factions'));
     },
 
     setupSearchAndFilters() {
@@ -241,6 +272,12 @@ const Entities = {
         if (pcClassFilter) {
             pcClassFilter.addEventListener('change', () => this.renderEntityList('pcs'));
         }
+
+        // Faction search
+        const factionSearch = document.getElementById('factionSearch');
+        if (factionSearch) {
+            factionSearch.addEventListener('input', Utils.debounce(() => this.renderEntityList('factions'), 200));
+        }
     },
 
     // Render entity list
@@ -253,7 +290,8 @@ const Entities = {
             quests: 'questList',
             items: 'itemList',
             lore: 'loreList',
-            pcs: 'pcList'
+            pcs: 'pcList',
+            factions: 'factionList'
         };
         const listEl = document.getElementById(listIdMap[type]);
         if (!listEl) return;
@@ -293,6 +331,9 @@ const Entities = {
                 query = document.getElementById('pcSearch')?.value || '';
                 filters.status = document.getElementById('pcFilterStatus')?.value || '';
                 filters.class = document.getElementById('pcFilterClass')?.value || '';
+                break;
+            case 'factions':
+                query = document.getElementById('factionSearch')?.value || '';
                 break;
         }
 
@@ -398,6 +439,16 @@ const Entities = {
                 }
                 description = entity.concept || entity.summary;
                 break;
+            case 'factions':
+                subtitle = entity.headquarters || '';
+                if (entity.leader) {
+                    subtitle += (subtitle ? ' • ' : '') + `Leader: ${entity.leader}`;
+                }
+                description = entity.description;
+                const rep = entity.currentReputation || entity.reputationTrack?.current || 0;
+                const repColor = rep >= 10 ? 'tag-friendly' : rep >= 5 ? 'tag-neutral' : rep < 0 ? 'tag-hostile' : 'tag-unknown';
+                tags = `<span class="tag ${repColor}">Rep: ${rep >= 0 ? '+' : ''}${rep}</span>`;
+                break;
         }
 
         const portrait = (type === 'npcs' && entity.portrait) || (type === 'items' && entity.image) || (type === 'pcs' && entity.portrait);
@@ -461,6 +512,9 @@ const Entities = {
                 break;
             case 'pcs':
                 detailHtml = this.renderPcDetail(entity, linkedEntities);
+                break;
+            case 'factions':
+                detailHtml = this.renderFactionDetail(entity, linkedEntities);
                 break;
         }
 
@@ -533,6 +587,9 @@ const Entities = {
                 break;
             case 'pcs':
                 detailHtml = this.renderPcDetail(entity, linkedEntities);
+                break;
+            case 'factions':
+                detailHtml = this.renderFactionDetail(entity, linkedEntities);
                 break;
         }
 
@@ -649,10 +706,33 @@ const Entities = {
 
                     ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
 
+                    ${entity.tags && entity.tags.length > 0 ? `
+                        <div class="entity-detail-section">
+                            <h3>Tags</h3>
+                            <div class="entity-tags-display">
+                                ${entity.tags.map(tag => `<span class="tag tag-neutral">${Utils.escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${entity.dialogueExamples && entity.dialogueExamples.length > 0 ? `
+                        <div class="entity-detail-section">
+                            <h3>Example Dialogue</h3>
+                            <div class="dialogue-examples">
+                                ${entity.dialogueExamples.map(dialogue => `
+                                    <div class="dialogue-item">
+                                        <i class="icon icon-chat"></i>
+                                        <span class="dialogue-text">"${Utils.escapeHtml(dialogue)}"</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
                     ${hasDmContent ? `
                         <div class="entity-detail-dm-section">
                             <h3 class="dm-section-header"><i class="icon icon-warning"></i> DM Only</h3>
-                            
+
                             ${entity.background ? `
                                 <details class="dm-collapsible" open>
                                     <summary>Background</summary>
@@ -892,7 +972,7 @@ const Entities = {
 
     renderQuestDetail(entity, linked) {
         const giver = entity.giverNpcId ? DataManager.getEntity('npcs', entity.giverNpcId) : null;
-        const prerequisites = (entity.prerequisiteIds || []).map(id => DataManager.getEntity('quests', id)).filter(Boolean);
+        const prerequisites = (entity.prerequisites || entity.prerequisiteIds || []).map(id => DataManager.getEntity('quests', id)).filter(Boolean);
         const relatedNpcs = (entity.npcIds || []).map(id => DataManager.getEntity('npcs', id)).filter(Boolean);
         const relatedLocations = (entity.locationIds || []).map(id => DataManager.getEntity('locations', id)).filter(Boolean);
 
@@ -905,7 +985,7 @@ const Entities = {
         ]);
 
         const hasConnections = giver || prerequisites.length > 0 || relatedNpcs.length > 0 || relatedLocations.length > 0;
-        const hasDmContent = entity.background || entity.runGuide || entity.complications || entity.consequences || entity.secrets;
+        const hasDmContent = entity.background || entity.dmGuide || entity.runGuide || entity.boxedText || entity.complications || entity.consequences || entity.secrets;
 
         return `
             <div class="entity-detail-main">
@@ -936,11 +1016,34 @@ const Entities = {
                 ${entity.rewards ? `
                     <div class="entity-detail-section">
                         <h3>Rewards</h3>
-                        <div class="md-content">${Utils.parseMarkdown(entity.rewards)}</div>
+                        ${typeof entity.rewards === 'object' ? `
+                            <div class="rewards-display">
+                                ${entity.rewards.gold ? `<div class="reward-item"><i class="icon icon-coins"></i> <strong>Gold:</strong> ${entity.rewards.gold} gp</div>` : ''}
+                                ${entity.rewards.level ? `<div class="reward-item"><i class="icon icon-level"></i> <strong>Level:</strong> ${entity.rewards.level}</div>` : ''}
+                                ${entity.rewards.reputation ? `<div class="reward-item"><i class="icon icon-reputation"></i> <strong>Reputation:</strong> ${Utils.escapeHtml(entity.rewards.reputation)}</div>` : ''}
+                                ${entity.rewards.ally ? `<div class="reward-item"><i class="icon icon-npcs"></i> <strong>Ally:</strong> ${Utils.escapeHtml(entity.rewards.ally)}</div>` : ''}
+                                ${entity.rewards.knowledge ? `<div class="reward-item"><i class="icon icon-lore"></i> <strong>Knowledge:</strong> ${Utils.escapeHtml(entity.rewards.knowledge)}</div>` : ''}
+                                ${entity.rewards.items ? `<div class="reward-item"><i class="icon icon-items"></i> <strong>Items:</strong> ${Utils.escapeHtml(entity.rewards.items)}</div>` : ''}
+                                ${entity.rewards.unlock ? `<div class="reward-item"><i class="icon icon-unlock"></i> <strong>Unlock:</strong> ${Utils.escapeHtml(entity.rewards.unlock)}</div>` : ''}
+                                ${entity.rewards.consequence ? `<div class="reward-item"><i class="icon icon-warning"></i> <strong>Consequence:</strong> ${Utils.escapeHtml(entity.rewards.consequence)}</div>` : ''}
+                                ${entity.rewards.other ? `<div class="reward-item"><i class="icon icon-star"></i> <strong>Other:</strong> ${Utils.escapeHtml(entity.rewards.other)}</div>` : ''}
+                            </div>
+                        ` : `
+                            <div class="md-content">${Utils.parseMarkdown(entity.rewards)}</div>
+                        `}
                     </div>
                 ` : ''}
 
                 ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
+
+                ${entity.tags && entity.tags.length > 0 ? `
+                    <div class="entity-detail-section">
+                        <h3>Tags</h3>
+                        <div class="entity-tags-display">
+                            ${entity.tags.map(tag => `<span class="tag tag-neutral">${Utils.escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
 
                 ${hasDmContent ? `
                     <div class="entity-detail-dm-section">
@@ -953,10 +1056,31 @@ const Entities = {
                             </details>
                         ` : ''}
 
+                        ${entity.dmGuide ? `
+                            <details class="dm-collapsible" open>
+                                <summary>DM Guide</summary>
+                                <div class="dm-content md-content">${Utils.parseMarkdown(entity.dmGuide)}</div>
+                            </details>
+                        ` : ''}
+
                         ${entity.runGuide ? `
                             <details class="dm-collapsible" open>
                                 <summary>Run Guide</summary>
                                 <div class="dm-content md-content">${Utils.parseMarkdown(entity.runGuide)}</div>
+                            </details>
+                        ` : ''}
+
+                        ${entity.boxedText ? `
+                            <details class="dm-collapsible" open>
+                                <summary>Boxed Text (Read-Aloud)</summary>
+                                <div class="dm-content boxed-text-sections">
+                                    ${Object.entries(entity.boxedText).map(([key, text]) => `
+                                        <div class="boxed-text-item">
+                                            <h4 class="boxed-text-label">${Utils.escapeHtml(key.replace(/([A-Z])/g, ' $1').trim())}</h4>
+                                            <div class="boxed-text-content">${Utils.escapeHtml(text)}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </details>
                         ` : ''}
 
@@ -1285,6 +1409,139 @@ const Entities = {
         `;
     },
 
+    renderFactionDetail(entity, linked) {
+        // Get connected entities
+        const keyNpcs = (entity.keyNpcIds || entity.keyNPCs || []).map(id => DataManager.getEntity('npcs', id)).filter(Boolean);
+        const locations = (entity.locationIds || []).map(id => DataManager.getEntity('locations', id)).filter(Boolean);
+        const quests = (entity.questIds || entity.quests || []).map(id => DataManager.getEntity('quests', id)).filter(Boolean);
+
+        const shownIds = new Set([
+            ...keyNpcs.map(e => e.id),
+            ...locations.map(e => e.id),
+            ...quests.map(e => e.id)
+        ]);
+
+        const hasConnections = keyNpcs.length > 0 || locations.length > 0 || quests.length > 0;
+
+        // Get reputation data
+        const currentRep = entity.currentReputation ?? entity.reputationTrack?.current ?? 0;
+        const repTrack = entity.reputationTrack;
+
+        return `
+            <div class="entity-detail-main">
+                <div class="entity-detail-header">
+                    <h2>${Utils.escapeHtml(entity.name)}</h2>
+                    ${entity.headquarters || entity.leader ? `
+                        <div class="entity-detail-subtitle">
+                            ${entity.headquarters ? Utils.escapeHtml(entity.headquarters) : ''}
+                            ${entity.leader ? (entity.headquarters ? ' • ' : '') + 'Leader: ' + Utils.escapeHtml(entity.leader) : ''}
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${entity.description ? `<div class="entity-detail-section"><h3>Description</h3><div class="md-content">${Utils.parseMarkdown(entity.description)}</div></div>` : ''}
+
+                ${repTrack ? `
+                    <div class="entity-detail-section reputation-tracker">
+                        <h3>Party Reputation: ${currentRep >= 0 ? '+' : ''}${currentRep}</h3>
+                        <div class="reputation-bar">
+                            <div class="reputation-fill" style="width: ${Math.min(100, Math.max(0, ((currentRep + 10) / 25) * 100))}%;"></div>
+                            <div class="reputation-current" style="left: ${Math.min(100, Math.max(0, ((currentRep + 10) / 25) * 100))}%;"></div>
+                        </div>
+                        <div class="reputation-levels">
+                            ${Object.entries(repTrack.levels || {}).map(([range, data]) => {
+                                const match = range.match(/(-?\d+)\s+to\s+(-?\d+|\+)/);
+                                const isActive = match && currentRep >= parseInt(match[1]) && (match[2] === '+' || currentRep <= parseInt(match[2]));
+                                return `
+                                    <div class="reputation-level ${isActive ? 'active' : ''}">
+                                        <div class="reputation-level-header">
+                                            <span class="reputation-level-range">${Utils.escapeHtml(range)}</span>
+                                            <span class="reputation-level-rank">${Utils.escapeHtml(data.rank)}</span>
+                                        </div>
+                                        <div class="reputation-level-effects">${Utils.escapeHtml(data.effects)}</div>
+                                        ${data.access ? `<div class="reputation-level-access"><strong>Access:</strong> ${Utils.escapeHtml(data.access)}</div>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${repTrack.reputationGains || repTrack.reputationLosses ? `
+                            <div class="reputation-changes">
+                                ${repTrack.reputationGains ? `
+                                    <details class="dm-collapsible">
+                                        <summary>Reputation Gains</summary>
+                                        <div class="dm-content">
+                                            ${Object.entries(repTrack.reputationGains).map(([action, value]) =>
+                                                `<div>${Utils.escapeHtml(action)}: <strong>+${value}</strong></div>`
+                                            ).join('')}
+                                        </div>
+                                    </details>
+                                ` : ''}
+                                ${repTrack.reputationLosses ? `
+                                    <details class="dm-collapsible">
+                                        <summary>Reputation Losses</summary>
+                                        <div class="dm-content">
+                                            ${Object.entries(repTrack.reputationLosses).map(([action, value]) =>
+                                                `<div>${Utils.escapeHtml(action)}: <strong>${value}</strong></div>`
+                                            ).join('')}
+                                        </div>
+                                    </details>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+
+                ${entity.goals ? `<div class="entity-detail-section"><h3>Goals</h3><div class="md-content">${Utils.parseMarkdown(entity.goals)}</div></div>` : ''}
+                ${entity.allies ? `<div class="entity-detail-section"><h3>Allies</h3><div class="md-content">${Utils.parseMarkdown(entity.allies)}</div></div>` : ''}
+                ${entity.enemies ? `<div class="entity-detail-section"><h3>Enemies</h3><div class="md-content">${Utils.parseMarkdown(entity.enemies)}</div></div>` : ''}
+                ${entity.resources ? `<div class="entity-detail-section"><h3>Resources</h3><div class="md-content">${Utils.parseMarkdown(entity.resources)}</div></div>` : ''}
+                ${entity.loreReference ? `<div class="entity-detail-section"><h3>Lore Reference</h3><div class="md-content">${Utils.parseMarkdown(entity.loreReference)}</div></div>` : ''}
+                ${entity.notes ? `<div class="entity-detail-section"><h3>Notes</h3><div class="md-content">${Utils.parseMarkdown(entity.notes)}</div></div>` : ''}
+
+                ${entity.secrets ? `
+                    <div class="entity-detail-section entity-detail-secret">
+                        <h3><i class="icon icon-warning"></i> Secrets (DM Only)</h3>
+                        <div class="md-content">${Utils.parseMarkdown(entity.secrets)}</div>
+                    </div>
+                ` : ''}
+
+                ${hasConnections ? `
+                    <div class="entity-detail-section">
+                        <h3 class="connections-header"><i class="icon icon-link"></i> Connections <span class="connections-count">${keyNpcs.length + locations.length + quests.length}</span></h3>
+                        <div class="entity-links-grid">
+                            ${keyNpcs.length > 0 ? `
+                                <div class="links-group links-npcs">
+                                    <div class="links-group-label"><i class="icon icon-npcs"></i> Key NPCs</div>
+                                    <div class="entity-links-list">
+                                        ${keyNpcs.map(n => `<span class="entity-link" data-type="npcs" data-id="${n.id}"><i class="icon icon-npc"></i> ${Utils.escapeHtml(n.name)}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${locations.length > 0 ? `
+                                <div class="links-group links-locations">
+                                    <div class="links-group-label"><i class="icon icon-locations"></i> Locations</div>
+                                    <div class="entity-links-list">
+                                        ${locations.map(l => `<span class="entity-link" data-type="locations" data-id="${l.id}"><i class="icon icon-location"></i> ${Utils.escapeHtml(l.name)}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${quests.length > 0 ? `
+                                <div class="links-group links-quests">
+                                    <div class="links-group-label"><i class="icon icon-quests"></i> Related Quests</div>
+                                    <div class="entity-links-list">
+                                        ${quests.map(q => `<span class="entity-link" data-type="quests" data-id="${q.id}"><i class="icon icon-quest"></i> ${Utils.escapeHtml(q.name)}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${this.renderReferencedBy(linked, shownIds)}
+            </div>
+        `;
+    },
+
     // Helper function to render "Referenced By" section (entities that link TO this one)
     renderReferencedBy(linked, shownIds) {
         const sections = [];
@@ -1388,7 +1645,21 @@ const Entities = {
                 currentGroup = null;
             }
 
-            const value = entity[field.name] || '';
+            let value = entity[field.name] || '';
+
+            // Convert arrays to newline-separated strings for display
+            if (field.name === 'tags' || field.name === 'dialogueExamples') {
+                if (Array.isArray(value)) {
+                    value = value.join('\n');
+                }
+            }
+            // Convert boxedText object to JSON string for editing
+            else if (field.name === 'boxedText') {
+                if (value && typeof value === 'object') {
+                    value = JSON.stringify(value, null, 2);
+                }
+            }
+
             const wrapperClass = field.group ? 'form-group' : 'form-group';
 
             html += `<div class="${wrapperClass}">`;
@@ -1529,7 +1800,33 @@ const Entities = {
                     if (field.type === 'number' && value) {
                         value = parseFloat(value);
                     }
-                    data[field.name] = value;
+
+                    // Special handling for array fields (tags, dialogueExamples)
+                    if (field.name === 'tags' || field.name === 'dialogueExamples') {
+                        if (value) {
+                            // Split by newlines or commas, trim, and filter empty
+                            data[field.name] = value.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+                        } else {
+                            data[field.name] = [];
+                        }
+                    }
+                    // Special handling for boxedText (JSON object)
+                    else if (field.name === 'boxedText') {
+                        if (value) {
+                            try {
+                                data[field.name] = JSON.parse(value);
+                            } catch (e) {
+                                UI.showToast('Boxed Text must be valid JSON', 'error');
+                                input.style.borderColor = 'var(--danger)';
+                                valid = false;
+                            }
+                        } else {
+                            data[field.name] = null;
+                        }
+                    }
+                    else {
+                        data[field.name] = value;
+                    }
 
                     if (field.required && !value) {
                         input.style.borderColor = 'var(--danger)';

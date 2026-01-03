@@ -1266,6 +1266,102 @@
     margin: var(--spacing-md) 0;
 }
 
+/* Tags Display */
+.entity-tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+/* Dialogue Examples */
+.dialogue-examples {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.dialogue-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-sm);
+}
+
+.dialogue-item .icon {
+    flex-shrink: 0;
+    color: var(--primary);
+    margin-top: 0.2rem;
+}
+
+.dialogue-text {
+    flex: 1;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* Rewards Display */
+.rewards-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+}
+
+.reward-item .icon {
+    color: var(--warning);
+    flex-shrink: 0;
+}
+
+.reward-item strong {
+    color: var(--warning);
+}
+
+/* Boxed Text (Read-Aloud) Styling */
+.boxed-text-sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.boxed-text-item {
+    background: rgba(139, 115, 85, 0.05);
+    border-left: 3px solid var(--accent);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-sm);
+}
+
+.boxed-text-label {
+    font-family: var(--font-header);
+    font-size: 0.9rem;
+    color: var(--accent-light);
+    text-transform: capitalize;
+    margin-bottom: var(--spacing-sm);
+}
+
+.boxed-text-content {
+    font-family: var(--font-body);
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    padding: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
 /* DM Only Section Styles */
 .entity-detail-dm-section {
     background: linear-gradient(135deg, rgba(139, 58, 58, 0.1) 0%, rgba(139, 107, 58, 0.1) 100%);
@@ -1625,4 +1721,130 @@
         top: var(--spacing-sm);
         right: var(--spacing-sm);
     }
+}
+
+/* Reputation Tracker */
+.reputation-tracker {
+    background: var(--bg-panel);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.reputation-bar {
+    position: relative;
+    height: 24px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    margin: var(--spacing-md) 0;
+    overflow: hidden;
+}
+
+.reputation-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--hostile) 0%, var(--neutral) 50%, var(--friendly) 100%);
+    opacity: 0.3;
+    transition: width 0.3s ease;
+}
+
+.reputation-current {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transition: left 0.3s ease;
+}
+
+.reputation-levels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.reputation-level {
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.reputation-level.active {
+    background: var(--bg-elevated);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(201, 169, 97, 0.3);
+}
+
+.reputation-level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xs);
+}
+
+.reputation-level-range {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.reputation-level-rank {
+    font-family: var(--font-header);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.reputation-level.active .reputation-level-rank {
+    color: var(--warning);
+}
+
+.reputation-level-effects {
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.reputation-level-access {
+    margin-top: var(--spacing-xs);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.reputation-changes {
+    margin-top: var(--spacing-lg);
+}
+
+.dm-collapsible {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.dm-collapsible summary {
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+    user-select: none;
+}
+
+.dm-collapsible summary:hover {
+    background: var(--bg-elevated);
+}
+
+.dm-collapsible .dm-content {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border);
+}
+
+.dm-collapsible .dm-content > div {
+    padding: var(--spacing-xs) 0;
 }

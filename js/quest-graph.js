@@ -340,9 +340,10 @@ const QuestGraph = {
                 questData: q
             });
 
-            // Build edges from prerequisites
-            if (q.prerequisiteIds && q.prerequisiteIds.length > 0) {
-                q.prerequisiteIds.forEach(prereqId => {
+            // Build edges from prerequisites (support both 'prerequisites' and 'prerequisiteIds')
+            const prereqs = q.prerequisites || q.prerequisiteIds || [];
+            if (prereqs.length > 0) {
+                prereqs.forEach(prereqId => {
                     // Only add edge if both nodes exist
                     if (ids.has(prereqId)) {
                         edges.push({
@@ -352,6 +353,33 @@ const QuestGraph = {
                             width: q.status === 'Active' ? 3 : 2,
                             color: {
                                 opacity: q.status === 'Completed' || q.status === 'Failed' ? 0.3 : 0.7
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Also build edges from hooks_to and unlocks fields
+            const hooksTo = q.hooks_to || [];
+            if (hooksTo.length > 0) {
+                hooksTo.forEach(targetId => {
+                    // Only add edge if both nodes exist
+                    if (ids.has(targetId)) {
+                        edges.push({
+                            from: q.id,
+                            to: targetId,
+                            dashes: true,
+                            width: 1,
+                            color: {
+                                color: '#8b7355',
+                                opacity: 0.5
+                            },
+                            arrows: {
+                                to: {
+                                    enabled: true,
+                                    type: 'arrow',
+                                    scaleFactor: 0.4
+                                }
                             }
                         });
                     }
